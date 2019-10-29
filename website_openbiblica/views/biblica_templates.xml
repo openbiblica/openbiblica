@@ -1,0 +1,338 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="biblicas" name="Biblicas">
+        <t t-call="website_openbiblica.openbiblica_layout">
+            <div class="container">
+                <table class="table table-sm o_main_table">
+                    <tr>
+                        <th><h4>Interlinear Name</h4></th>
+                        <th><h4>Language</h4></th>
+                        <th><h4>Author</h4></th>
+                    </tr>
+                    <tr t-foreach="interlinears" t-as="interlinear">
+                        <td>
+                            <a role="button" class="btn btn-sm btn-link"
+                                       t-attf-href="/biblica/#{slug(interlinear)}"><h5 t-esc="interlinear.name"/></a>
+                        </td>
+                        <td><h5 t-esc="interlinear.lang_id.name"/></td>
+                        <td><h5 t-esc="interlinear.create_id.name"/></td>
+                    </tr>
+                    <tr>
+                        <th><h4>Biblica Name</h4></th>
+                        <th><h4>Language</h4></th>
+                        <th><h4>Author</h4></th>
+                    </tr>
+                    <tr t-foreach="biblicas" t-as="biblica">
+                        <td>
+                            <a role="button" class="btn btn-sm btn-link"
+                                       t-attf-href="/biblica/#{slug(biblica)}"><h5 t-esc="biblica.name"/></a>
+                        </td>
+                        <td><h5 t-esc="biblica.lang_id.name"/></td>
+                        <td><h5 t-esc="biblica.create_id.name"/></td>
+                    </tr>
+                    <tr>
+                        <td align="left"><a role="button" href="/create/biblica" class="btn btn-sm btn-danger">Create New</a></td>
+                        <td/>
+                        <td/>
+                    </tr>
+                </table>
+                <div class="mt32 mb32" align="center">
+                    <span><a href="javascript: window.history.back()" class="btn btn-sm btn-danger">Back</a></span>
+                </div>
+            </div>
+        </t>
+    </template>
+
+    <template id="biblica_editor" name="Biblica Editor">
+        <t t-call="website_openbiblica.openbiblica_layout">
+            <div class="container">
+                <t t-call="website_openbiblica.biblica_form"/>
+            </div>
+        </t>
+    </template>
+
+    <template id="view_biblica" name="Biblica">
+        <t t-call="website_openbiblica.openbiblica_layout">
+            <div class="container">
+                <div class="o_edit_mode" t-if="biblica_id.create_id == user_id"/>
+                <table class="table table-sm" id="biblica">
+                    <tr id="bible">
+                        <td width="20%"><h1>Bible Name</h1></td>
+                        <td name='source_biblica'/>
+                        <td>
+                            <h1 t-esc="biblica_id.name"/>
+                            <t t-if="biblica_id.create_id == user_id" name='show_items' style="display:none;">
+                                <span name='show_items' style="display:none;" t-if="biblica_id.create_id == user_id">
+                                    <form t-attf-action="/edit/biblica" method="post" role="form" class="tag_text js_website_submit_form">
+                                        <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                                        <input type="hidden" name="biblica_id" t-att-value="biblica_id.id"/>
+                                        <button type="submit" class="btn btn-warning btn-sm">Edit Project Title</button>
+                                        <a role="button" t-attf-href="/remove/biblica/#{slug(biblica_id)}" class="btn btn-sm btn-danger">Remove this project</a>
+                                    </form>
+                                </span>
+                            </t>
+                        </td>
+                    </tr>
+                    <tr id="description">
+                        <td>Description</td>
+                        <td name='source_description'/>
+                        <td><span t-field="biblica_id.description"/></td>
+                    </tr>
+                    <tr id="author">
+                        <td>Author</td>
+                        <td name='source_author'/>
+                        <td><span t-field="biblica_id.create_id"/></td>
+                    </tr>
+                    <tr id="language">
+                        <td>Language</td>
+                        <td name='source_language'/>
+                        <td><span t-field="biblica_id.lang_id"/></td>
+                    </tr>
+                    <tr id="install" t-if="biblica_id.create_id == user_id" groups="website.group_website_publisher">
+                        <td>Import from USFM</td>
+                        <td name='source_usfm'/>
+                        <td>
+                            <a role="button" t-attf-href="/install/b/usfm/#{slug(biblica_id)}" class="btn btn-sm btn-danger">Install USFM</a>
+                        </td>
+                    </tr>
+                    <tr groups="website.group_website_publisher">
+                        <td>Interlinear</td>
+                        <td/>
+                        <td>
+                            <a t-if="not biblica_id.is_interlinear" class="btn btn-danger btn-sm" t-attf-href="/interlinear/b/#{slug(biblica_id)}">Linearing</a>
+                            <a t-if="biblica_id.is_interlinear" class="btn btn-danger btn-sm" t-attf-href="/uninterlinear/b/#{slug(biblica_id)}">Unlinearing</a>
+                        </td>
+                    </tr>
+                    <!--<tr id="sources">-->
+                        <!--<td>Sources</td>-->
+                        <!--<td name="source_sources"/>-->
+                        <!--<td>-->
+                            <!--<p t-foreach="biblica_id.source_ids" t-as="source">-->
+                                <!--<a t-attf-href="/biblica/#{slug(source)}"><span t-field="source.name"/> </a><br/>-->
+                                <!--<a t-attf-href="/remove/b/source/#{slug(biblica_id)}/#{slug(source)}" name='show_items' style="display:none;" class="btn btn-danger btn-sm">Remove</a>-->
+                                <!--<a t-attf-href="/copy/b/source/#{slug(biblica_id)}/#{slug(source)}" name='show_items' style="display:none;" class="btn btn-warning btn-sm">Copy</a>-->
+                                <!--<a t-attf-href="/main/b/source/#{slug(biblica_id)}/#{slug(source)}" name='show_items' style="display:none;"-->
+                                   <!--class="btn btn-primary btn-sm" t-if="source.id != biblica_id.source_id.id">Make this main source</a>-->
+                            <!--</p>-->
+                            <!--<a t-attf-href="/source/b/#{biblica_id.id}" class="btn btn-sm btn-primary" t-if="biblica_id.create_id == user_id">Add New Source</a>-->
+                        <!--</td>-->
+                    <!--</tr>-->
+                    <tr>
+                        <td>Books</td>
+                        <td name='source_contents'/>
+                        <td>
+                            <form t-if='biblica_id.create_id == user_id' t-attf-action="/add/content"
+                                  method="post" role="form" class="tag_text js_website_submit_form" enctype="multipart/form-data">
+                                <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                                <input type="hidden" name="biblica_id" t-att-value="biblica_id.id"/>
+                                <input type="text" name="name" required="True" class="mt4 mb4" placeholder="Book Name"/>
+                                <button type="submit" class="btn btn-primary btn-sm">Add New</button>
+                            </form>
+                            <t t-foreach="biblica_id.content_ids" t-as="content">
+                                <a role="button" class="btn btn-sm btn-link"
+                                   t-attf-href="/content/#{slug(content)}"><h5 t-esc="content.name"/></a><br/>
+                                <div class="mb32" t-if="biblica_id.create_id == user_id" name='show_items' style="display:none;">
+                                    <div class="mb8">
+                                        <a role="button" t-attf-href="/up/content/#{slug(content)}" class="btn btn-primary">Up</a>
+                                        <a role="button" t-attf-href="/down/content/#{slug(content)}" class="btn btn-primary">Down</a>
+                                    </div>
+                                    <div class="mb8">
+                                        <a role="button" t-attf-href="/edit/content/#{slug(content)}" class="btn btn-sm btn-warning">Edit</a>
+                                        <a role="button" t-attf-href="/remove/content/#{slug(content)}" class="btn btn-sm btn-danger">Remove</a>
+                                    </div>
+                                </div>
+                            </t>
+                        </td>
+                    </tr>
+                </table>
+                <div class="mt32 mb32" align="center">
+                    <span><a href="javascript: window.history.back()" class="btn btn-sm btn-danger">Back</a></span>
+                </div>
+                <t t-call="website_openbiblica.forum">
+                    <t t-set="biblica_forum" t-value="True"/>
+                </t>
+            </div>
+        </t>
+    </template>
+
+    <template id="biblica_form">
+        <h3>Biblica Project Form</h3>
+        <form t-attf-action="/save/biblica" method="post" role="form" class="tag_text js_website_submit_form o_editor">
+            <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+            <input t-if="biblica_id" type="hidden" name="biblica_id" t-att-value="biblica_id.id"/>
+            <div class="form-group row">
+                <label class="col-md-2 col-form-label" for="name">Biblica Project Title*</label>
+                <div class="col-md-8">
+                    <input type="text" name="name" required="True" class="form-control" t-att-value="biblica_id.name if biblica_id else ''" placeholder="e.g. New OpenBiblica Version"/>
+                </div>
+            </div>
+            <div class="form-group row">
+                <label class="col-lg-2 col-form-label mb16" for="description">Project Description</label>
+                <div class="col-lg-8 mb16">
+                    <textarea name="description" id="description" style="min-height: 120px" class="form-control">
+                        <t t-if="biblica_id" t-esc="biblica_id.description"/>
+                    </textarea>
+                </div>
+            </div>
+            <div class="form-group row">
+                <label class="col-lg-2 col-form-label mb16" for="lang_id">Project Language</label>
+                <div class="col-md-8">
+                    <select id="lang_id" name="lang_id" t-attf-class="form-control">
+                        <option value="">Select...</option>
+                        <option t-foreach="languages" t-as="lg" t-att-value="lg.id"
+                                t-att-selected="lg.id == biblica_id.lang_id.id if biblica_id else lg.id == ''">
+                            <t t-esc="lg.name"/>
+                        </option>
+                    </select>
+                </div>
+            </div>
+            <div class="form-group row">
+                <label class="col-lg-2 col-form-label mb16" for="lang_button"/>
+                <div class="col-md-8">
+                    <a href="#" name="switch_show" class="btn btn-sm btn-danger">My language is not in the list</a>
+                </div>
+            </div>
+            <div name='show_items' style="display:none;" class="form-group row">
+                <label class="col-lg-2 col-form-label mb16" for="lang_id">New Language Name*</label>
+                <div class="col-md-8">
+                    <input type="text" name="language_name" class="form-control" placeholder="e.g. Bahasa Indonesia"/>
+                </div>
+            </div>
+            <div name='show_items' style="display:none;" class="form-group row">
+                <label class="col-lg-2 col-form-label mb16" for="lang_id">New Language Code</label>
+                <div class="col-md-8">
+                    <input type="text" name="language_code" class="form-control" placeholder="e.g. 	id_ID"/>
+                </div>
+            </div>
+            <div name='show_items' style="display:none;" class="form-group row">
+                <label class="col-lg-2 col-form-label mb16" for="lang_id">New Language ISO Code</label>
+                <div class="col-md-8">
+                    <input type="text" name="language_iso_code" class="form-control" placeholder="e.g. id"/>
+                </div>
+            </div>
+            <div name='show_items' style="display:none;" class="form-group row">
+                <label class="col-lg-2 col-form-label mb16" for="lang_id">Orientation</label>
+                <div class="col-md-8">
+                    <select id="direction" name="direction" t-attf-class="form-control">
+                        <option value="ltr">Left-to-Right</option>
+                        <option value="rtl">Right-to-Left</option>
+                    </select>
+                </div>
+            </div>
+            <div class="mt32 mb32" align="center">
+                <span><a href="javascript: window.history.back()" class="btn btn-sm btn-danger">Back</a></span>
+                <button type="submit" class="btn btn-primary btn-sm">Save</button>
+            </div>
+        </form>
+    </template>
+
+    <template id="post_biblica_comment">
+        <h5>Add a Comment</h5>
+        <form t-attf-action="/comment/b/#{slug(biblica_id)}" method="post" class="js_website_submit_form" role="form">
+            <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+            <textarea name="content" class="form-control load_editor" required="True"/>
+            <button type="submit">Post Comment</button>
+        </form>
+    </template>
+
+    <template id="source_biblica" name="Add New Source">
+        <t t-call="website_openbiblica.openbiblica_layout">
+            <div class="container o_add_biblica_source">
+                <h3>Add Source for <span t-field="biblica_id.name"/> :</h3>
+                <form t-attf-action="/sourcing/b" method="post" role="form" class="tag_text js_website_submit_form">
+                    <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                    <input type="hidden" name="biblica_id" t-att-value="biblica_id.id"/>
+                    <div>
+                        <select name="language" class="form-control mt8 mb8">
+                            <option value="">Language...</option>
+                        </select>
+                    </div>
+                    <div>
+                        <select name="bible" class="form-control mt8 mb8">
+                            <option value="">Biblica...</option>
+                        </select>
+                    </div>
+                    <div name="submit" class="mt32 mb32" align="center">
+                        <span><a href="javascript: window.history.back()" class="btn btn-sm btn-danger">Back</a></span>
+                        <button type="submit" class="btn btn-primary btn-lg">Add</button>
+                    </div>
+                </form>
+            </div>
+        </t>
+    </template>
+
+    <template id="sourcing">
+        <t t-call="website_openbiblica.openbiblica_layout">
+            <div class="container o_sourcing_b">
+                <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                <input type="hidden" name="biblica_id" t-att-value="biblica_id"/>
+                <input type="hidden" name="content_id" t-att-value="content_id"/>
+                <input type="hidden" name="s_part_id" t-att-value="s_part_id"/>
+                <h1 align="center">Please wait, this could take some time.</h1>
+                <h2 align="center" t-if="biblica_id">You can take a coffee or snack.</h2>
+                <h2 align="center" id="report"/>
+                <h2 align="center">It will automatic redirect when done.</h2>
+            </div>
+        </t>
+    </template>
+
+    <template id="copying">
+        <t t-call="website_openbiblica.openbiblica_layout">
+            <div class="container o_copying_b">
+                <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                <input type="hidden" name="biblica_id" t-att-value="biblica_id"/>
+                <input type="hidden" name="content_id" t-att-value="content_id"/>
+                <input type="hidden" name="s_part_id" t-att-value="s_part_id"/>
+                <h1 align="center">Please wait, this could take some time.</h1>
+                <h2 align="center" t-if="biblica_id">You can take a coffee or snack.</h2>
+                <h2 align="center" id="report"/>
+                <h2 align="center">It will automatic redirect when done.</h2>
+            </div>
+        </t>
+    </template>
+
+    <template id="remove_source">
+        <t t-call="website_openbiblica.openbiblica_layout">
+            <div class="container o_remove_source">
+                <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                <input type="hidden" name="biblica_id" t-att-value="biblica_id"/>
+                <input type="hidden" name="content_id" t-att-value="content_id"/>
+                <input type="hidden" name="s_part_id" t-att-value="s_part_id"/>
+                <h1 align="center">Please wait, this could take some time.</h1>
+                <h2 align="center" t-if="biblica_id">You can take a coffee or snack.</h2>
+                <h2 align="center" id="report"/>
+                <h2 align="center">It will automatic redirect when done.</h2>
+            </div>
+        </t>
+    </template>
+
+    <template id="remove">
+        <t t-call="website_openbiblica.openbiblica_layout">
+            <div class="container o_remove">
+                <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                <input type="hidden" name="biblica_id" t-att-value="biblica_id"/>
+                <input type="hidden" name="part_id" t-att-value="part_id"/>
+                <h1 align="center">Please wait, this could take some time.</h1>
+                <h2 align="center" t-if="biblica_id">You can take a coffee or snack.</h2>
+                <h2 align="center" id="report"/>
+                <h2 align="center">It will automatic redirect when done.</h2>
+            </div>
+        </t>
+    </template>
+
+    <template id="cleaning">
+        <t t-call="website_openbiblica.openbiblica_layout">
+            <div class="container o_cleaning">
+                <input type="hidden" name="part_id" t-att-value="part_id"/>
+                <h1 align="center">Please wait, this could take some time.</h1>
+                <h2 align="center" id="report"/>
+                <h2 align="center">It will automatic redirect when done.</h2>
+                <form id="install_next" t-attf-action="/install/usfm/#{slug(content_id)}" method="post" role="form">
+                    <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                    <button id="install_next_button" style="display:none;" type="submit" class="btn btn-warning btn-sm mt8"/>
+                </form>
+            </div>
+        </t>
+    </template>
+
+</odoo>

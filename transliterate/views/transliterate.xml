@@ -1,0 +1,309 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="website_menu_biblicas" model="website.menu">
+        <field name="name">Dictionary</field>
+        <field name="url">/dict</field>
+        <field name="parent_id" ref="website.main_menu"/>
+        <field name="sequence" type="int">11</field>
+    </record>
+
+    <template id="assets_frontend" inherit_id="web.assets_frontend" name="Portal Assets">
+        <xpath expr="//script[last()]" position="after">
+            <script type="text/javascript" src="/transliterate/static/src/js/transliterate.js"/>
+        </xpath>
+    </template>
+
+    <record model="ir.ui.view" id="view_word_form">
+        <field name="name">open.word.form</field>
+        <field name="model">open.word</field>
+        <field name="inherit_id" ref="openbiblica.view_word_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='lang_id']" position="before">
+                <field name="frequency"/>
+            </xpath>
+        </field>
+    </record>
+
+    <record model="ir.ui.view" id="view_word_tree">
+        <field name="name">open.word.form</field>
+        <field name="model">open.word</field>
+        <field name="inherit_id" ref="openbiblica.view_word_tree"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='lang_id']" position="before">
+                <field name="frequency"/>
+            </xpath>
+        </field>
+    </record>
+
+    <template id="transliterate" inherit_id="website_openbiblica.core_interlinear_line">
+        <xpath expr="//a[@id='hebrew_name']" position="replace">
+            <form id="keyword_search" t-attf-action="/dict" target="_blank" method="post" role="form">
+                <input type="hidden" name="lgs_id" t-att-value="s_lang"/>
+                <input type="hidden" name="keyword" t-att-value="point_id.name"/>
+                <button type="submit" class="btn btn-link btn-sm">
+                    <h5 align="center" style="color: blue;" t-esc="point_id.name"/>
+                </button>
+            </form>
+            <form id="search" t-attf-action="/search/lang/#{s_lang}" target="_blank" align="right"
+                  method="post" role="form" class="tag_text js_website_submit_form">
+                <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                <input type="hidden" name="search" t-att-value="word_id.name"/>
+                <input type="hidden" name="language_id" t-att-value="word_id.lang_id.id"/>
+                <button type="submit" class="btn btn-link btn-sm">
+                    <h5 align="center" style="color: red;" t-esc="point_id.word_id.transliteration"/>
+                </button>
+            </form>
+        </xpath>
+        <xpath expr="//a[@id='point_name']" position="replace">
+            <form id="keyword_search" t-attf-action="/dict" target="_blank" method="post" role="form">
+                <input type="hidden" name="lgs_id" t-att-value="s_lang"/>
+                <input type="hidden" name="keyword" t-att-value="point_id.name"/>
+                <button type="submit" class="btn btn-link btn-sm">
+                    <h5 align="center" style="color: blue;" t-esc="point_id.name"/>
+                </button>
+            </form>
+            <form id="search" t-attf-action="/search/lang/#{s_lang}" target="_blank"
+                  method="post" role="form" class="tag_text js_website_submit_form">
+                <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                <input type="hidden" name="search" t-att-value="word_id.name"/>
+                <input type="hidden" name="language_id" t-att-value="word_id.lang_id.id"/>
+                <button type="submit" class="btn btn-link btn-sm">
+                    <h5 align="center" style="color: red;" t-esc="point_id.word_id.transliteration"/>
+                </button>
+            </form>
+        </xpath>
+    </template>
+
+    <template id="word" inherit_id="website_openbiblica.word_table">
+        <xpath expr="//h1[@id='word_name']" position="after">
+            <form id="search" t-attf-action="/search/lang/#{s_lang}" target="_blank" align="center"
+                  method="post" role="form" class="tag_text js_website_submit_form">
+                <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                <input type="hidden" name="search" t-att-value="word_id.name"/>
+                <button type="submit" class="btn btn-link btn-sm">
+                    <h2>
+                        ( <span t-esc="word_id.frequency"/> )
+                        <span style="color: red;" t-esc="word_id.transliteration"/>
+                    </h2>
+                </button>
+            </form>
+        </xpath>
+    </template>
+
+    <template id="dictionary" name="Dictionary">
+        <t t-call="website_openbiblica.openbiblica_layout">
+            <div class="container o_editor o_dictionary">
+                <div class="o_edit_mode" groups="base.group_user,base.group_portal"/>
+                <form id="keyword_search" t-attf-action="/dict/#{slug(lg_id)}" method="post" role="form">
+                    <table class="mt8 mb8">
+                        <tr>
+                            <td><h5>Source Language</h5></td>
+                            <td colspan="2">
+                                 <select id="src_id" name="src_id" t-attf-class="form-control">
+                                    <option value="">All</option>
+                                    <option value="he_IL">Hebrew</option>
+                                    <option value="el_GR">Greek</option>
+                                </select>
+                           </td>
+                        </tr>
+                        <tr>
+                            <td><h5>Dictionary Language</h5></td>
+                            <td colspan="2">
+                                 <select id="lgs_id" name="lgs_id" t-attf-class="form-control">
+                                    <option t-foreach="lgs" t-as="lg" t-att-value="lg.id"
+                                            t-att-selected="lg.id == lg_id.id if lg_id else lg.id == ''">
+                                        <t t-esc="lg.name"/>
+                                    </option>
+                                </select>
+                           </td>
+                        </tr>
+                        <tr>
+                            <td><h5>Sort By:</h5></td>
+                            <td colspan="2">
+                                 <select id="sorting" name="sorting" t-attf-class="form-control">
+                                    <option value=""/>
+                                    <option value="name">Name</option>
+                                    <option value="frequency desc">Frequency</option>
+                                </select>
+                           </td>
+                        </tr>
+                        <tr>
+                            <td><h5>Search Keyword</h5></td>
+                            <td>
+                                <input type="text" name="keyword" t-att-value="keyword" placeholder="Enter Keyword..." t-attf-class="form-control"/>
+                            </td>
+                            <td><button id="search" type="submit" class="btn btn-warning btn-sm mt8">Search</button></td>
+                        </tr>
+                    </table>
+                </form>
+                <table class="table">
+                    <tr>
+                        <td>Found : <span t-esc="total"/></td>
+                        <td colspan="2">
+                            <t t-call="website.pager" >
+                                <t t-set="classname">float-right</t>
+                            </t>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th><h4>Origin</h4></th>
+                        <th><h4>Word</h4></th>
+                        <th><h4>Dictionary</h4></th>
+                    </tr>
+                    <tr t-foreach="results" t-as="word_id">
+                        <td>
+                            <h5 t-field="word_id.lang_id.name"/>
+                            <form t-attf-action="/search/lang/#{lg_id.id}" method="post" role="form"
+                                  class="tag_text js_website_submit_form" target="_blank">
+                                <input type="hidden" name="search" t-att-value="word_id.name"/>
+                                <button type="submit" class="btn btn-link">
+                                    ( <span t-field="word_id.frequency"/> )
+                                </button>
+                            </form>
+                        </td>
+                        <td>
+                            <h4 t-field="word_id.name"/>
+                            <form t-attf-action="/word/#{slug(word_id)}/lang/#{lg_id.id}" method="post" role="form"
+                                  class="tag_text js_website_submit_form" target="_blank">
+                                <button type="submit" class="btn btn-link">
+                                    <span style="color: red;" t-esc="word_id.transliteration"/>
+                                </button>
+                            </form>
+                        </td>
+                        <td name="dictionaries">
+                            <t t-foreach="word_id.dictionary_ids" t-as="dict_id">
+                                <t t-if="dict_id.lang_id.id == lg_id.id">
+                                    <h5><span t-field="dict_id.name"/> <a role="button" target="_blank" t-attf-href="/meaning/#{slug(dict_id)}" class="btn btn-sm btn-danger"><span t-esc='len(dict_id.word_ids)'/></a></h5>
+                                    <div name='show_items' style="display:none;">
+                                        <form id="rm_dict" method="post" role="form" groups="base.group_user,base.group_portal"
+                                              t-att-action="pager['page']['url']">
+                                            <input type="hidden" name="rm_dict" t-att-value="dict_id.id"/>
+                                            <input type="hidden" name="rm_word" t-att-value="word_id.id"/>
+                                            <!--<button id="remove" class="fa fa-minus-square fa-danger">Remove</button>-->
+                                            <button id="remove" type="submit" class="btn btn-danger btn-sm">Remove</button>
+                                        </form>
+                                    </div><br/>
+                                </t>
+                            </t>
+                            <div id="add_dict" groups="base.group_user,base.group_portal">
+                                <form id="add_dict" method="post" role="form"
+                                      t-att-action="pager['page']['url']">
+                                    <input type="text" name="add_dict"/>
+                                    <input type="hidden" name="add_word" t-att-value="word_id.id"/>
+                                    <input type="hidden" name="add_lang" t-att-value="lg_id.id"/>
+                                    <button id="add_dict" type="submit" class="btn btn-primary btn-sm">Add</button>
+                                </form><br/>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td colspan="3">
+                            <t t-call="website.pager" >
+                                <t t-set="classname">float-right</t>
+                            </t>
+                        </td>
+                    </tr>
+                </table>
+                <div class="mt32 mb32" align="center">
+                    <span><a href="javascript: window.history.back()" class="btn btn-sm btn-danger">Back</a></span>
+                </div>
+            </div>
+        </t>
+    </template>
+
+    <template id="compute">
+        <t t-call="website_openbiblica.openbiblica_layout">
+            <div class="container o_compute_frequency" groups="website.group_website_publisher">
+                <input type="hidden" name="word" t-att-value="word.id"/>
+                <h5>Computing</h5>
+                <h5 name="word"><span t-field="word.name"/></h5>
+            </div>
+        </t>
+    </template>
+
+    <template id="new_lang" name="New Language">
+        <t t-call="website_openbiblica.openbiblica_layout">
+            <div class="container">
+                <h3>New Language Form</h3>
+                <form t-attf-action="/save/language" method="post" role="form" class="tag_text js_website_submit_form o_editor">
+                    <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                    <div name='show_items' class="form-group row">
+                        <label class="col-lg-2 col-form-label mb16" for="language_name">New Language Name*</label>
+                        <div class="col-md-8">
+                            <input type="text" name="language_name" class="form-control" placeholder="e.g. Bahasa Indonesia" required="True"/>
+                        </div>
+                    </div>
+                    <div name='show_items' class="form-group row">
+                        <label class="col-lg-2 col-form-label mb16" for="language_code">New Language Code</label>
+                        <div class="col-md-8">
+                            <input type="text" name="language_code" class="form-control" placeholder="e.g. 	id_ID"/>
+                        </div>
+                    </div>
+                    <div name='show_items' class="form-group row">
+                        <label class="col-lg-2 col-form-label mb16" for="language_iso_code">New Language ISO Code</label>
+                        <div class="col-md-8">
+                            <input type="text" name="language_iso_code" class="form-control" placeholder="e.g. id"/>
+                        </div>
+                    </div>
+                    <div name='show_items' class="form-group row">
+                        <label class="col-lg-2 col-form-label mb16" for="direction">Orientation</label>
+                        <div class="col-md-8">
+                            <select id="direction" name="direction" t-attf-class="form-control">
+                                <option value="ltr">Left-to-Right</option>
+                                <option value="rtl">Right-to-Left</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="mt32 mb32" align="center">
+                        <span><a href="javascript: window.history.back()" class="btn btn-sm btn-danger">Back</a></span>
+                        <button type="submit" class="btn btn-primary btn-sm">Save</button>
+                    </div>
+                </form>
+            </div>
+        </t>
+    </template>
+
+    <template id="view_meaning" name="Meanings">
+        <t t-call="website_openbiblica.openbiblica_layout">
+            <div class="container">
+                <table class="table">
+                    <tr style="color: blue;">
+                        <td>Meaning</td>
+                        <td>Words</td>
+                    </tr>
+                    <tr>
+                        <td><h5 t-field="meaning_id.name"/> </td>
+                        <td>
+                            <h5 t-foreach="meaning_id.word_ids" t-as="word_id">
+                                <span t-field="word_id.name"/>
+                                <t t-foreach="word_id.dictionary_ids" t-as="dict_id">
+                                    <span> [<span t-esc="dict_id.name" style="color: red;"/>]</span>
+                                </t>
+                            </h5>
+                        </td>
+                    </tr>
+                    <tr style="color: blue;" t-if="similar_ids">
+                        <td>Similar Meaning</td>
+                        <td>Words</td>
+                    </tr>
+                    <t t-if="similar_ids">
+                        <tr t-foreach="similar_ids" t-as="similar_id">
+                            <td>
+                                <h5 t-field="similar_id.name"/>
+                            </td>
+                            <td>
+                                <h5 t-foreach="similar_id.word_ids" t-as="word_id">
+                                    <span t-field="word_id.name"/>
+                                    <t t-foreach="word_id.dictionary_ids" t-as="dict_id">
+                                        <span> [<span t-esc="dict_id.name" style="color: red;"/>]</span>
+                                    </t>
+                                </h5>
+                            </td>
+                        </tr>
+                    </t>
+                </table>
+            </div>
+        </t>
+    </template>
+
+</odoo>

@@ -1,0 +1,310 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <template id="view_part" name="Part">
+        <t t-call="website_openbiblica.openbiblica_layout">
+            <div class="container o_editor">
+                <div class="o_source_menu" t-if="source_id"/>
+                <div class="o_edit_mode" t-if="biblica_id.create_id == user_id"/>
+                <div class="o_translate_content" t-if="content_id.create_id.id != user_id.id">
+                    <input type="hidden" name="t_content_id" t-att-value="content_id.id"/>
+                    <input type="hidden" name="t_content_name" t-att-value="content_id.name"/>
+                </div>
+                <form id="select_source_form" t-attf-action="/part/#{slug(part_id)}/#{line}/#{page}" method="post" role="form"
+                      class="tag_text js_website_submit_form o_select_source">
+                    <table class="table">
+                        <tr style="display:none">
+                            <td><input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/></td>
+                        </tr>
+                        <tr t-if="content_id.source_ids" name="source_item">
+                            <td>Source </td>
+                            <td>
+                                <select name="select_source" t-attf-class="form-control">
+                                    <t t-foreach="content_id.source_ids" t-as="s">
+                                        <option t-att-value="s.id" t-att-selected="s.id == source_id.content_id.id">
+                                            <span t-esc="s.biblica_id.name"/> > <span t-esc="s.name"/>
+                                        </option>
+                                    </t>
+                                </select>
+                            </td>
+                        </tr>
+                        <tr name="language_item" t-if="part_id.is_interlinear or source_id.is_interlinear">
+                            <td>Dictionary </td>
+                            <td>
+                                <select name="select_lang" t-attf-class="form-control" id="select_lang">
+                                    <t t-foreach="langs" t-as="ln">
+                                        <option t-att-value="ln.id" t-att-selected="ln.id == s_lang">
+                                            <span t-esc="ln.name"/>
+                                        </option>
+                                    </t>
+                                </select>
+                            </td>
+                        </tr>
+                    </table>
+                    <!--<div align="center" t-if="content_id.source_ids" name="source_item">-->
+                        <!--<select name="select_source" t-attf-class="form-control">-->
+                            <!--<t t-foreach="content_id.source_ids" t-as="s">-->
+                                <!--<option t-att-value="s.id" t-att-selected="s.id == source_id.content_id.id">-->
+                                    <!--<span t-esc="s.biblica_id.name"/> > <span t-esc="s.name"/>-->
+                                <!--</option>-->
+                            <!--</t>-->
+                        <!--</select>-->
+                    <!--</div>-->
+                    <!--<div align="center" t-attf-class="form-group row" name="language_item" t-if="part_id.is_interlinear or source_id.is_interlinear">-->
+                        <!--<label for="select_lang">Dictionary : </label>-->
+                        <!--<select name="select_lang" t-attf-class="form-control" id="select_lang">-->
+                            <!--<t t-foreach="langs" t-as="ln">-->
+                                <!--<option t-att-value="ln.id" t-att-selected="ln.id == s_lang">-->
+                                    <!--<span t-esc="ln.name"/>-->
+                                <!--</option>-->
+                            <!--</t>-->
+                        <!--</select>-->
+                    <!--</div>-->
+                    <button id="select_source_button" type="submit" style="display:none;"/>
+                </form>
+                <table id="part" class="table table-sm table-responsive table-hover">
+                    <tr id='source' t-if="source_id" align="center" name="source_item">
+                        <th name="source_header">Source</th>
+                        <th>Biblica</th>
+                    </tr>
+                    <tr id="bible">
+                        <td name="source_item" align="center" t-if="source_id">
+                            <a t-attf-href="/biblica/#{slug(source_id.biblica_id)}"><h5 t-esc="source_id.biblica_id.name"/></a>
+                            <a t-attf-href="/content/#{slug(source_id.content_id)}"><h4 t-esc="source_id.content_id.name"/></a>
+                            <h4 t-esc="source_id.subcontent_id.name" t-if="source_id.subcontent_id"/>
+                            <div id="copy_part" t-if="part_id.create_id == user_id" class="mt8 mb8">
+                                <a t-attf-href="/copy/p/source/#{slug(part_id)}/#{slug(source_id)}" class="btn btn-sm btn-warning">Copy</a>
+                            </div>
+                        </td>
+                        <td align="center">
+                            <a t-attf-href="/biblica/#{slug(biblica_id)}"><h5 t-esc="biblica_id.name"/></a>
+                            <a t-attf-href="/content/#{slug(content_id)}"><h4 t-esc="content_id.name"/></a>
+                            <h4 t-esc="part_id.subcontent_id.name" t-if="part_id.subcontent_id"/>
+                            <div t-if="part_id.create_id == user_id">
+                                <a t-attf-href="/source/c/#{content_id.id}" class="btn btn-sm btn-primary">Add New Source</a>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr id="part">
+                        <td name="source_item" align="center" t-if="source_id">
+                            <a t-attf-href="/part/#{slug(source_id)}/#{s_lang}"><h1>Chapter <span t-esc="source_id.name"/></h1></a>
+                        </td>
+                        <td align="center">
+                            <h1>Chapter <span t-esc="part_id.name" name='hide_items'/>
+                            <span t-if="part_id.create_id == user_id" class="mt16 mb32" name='show_items' style="display:none;">
+                                <form id="edit_part" t-attf-action="/edit/part" method="post" role="form" class="tag_text js_website_submit_form">
+                                    <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                                    <input type="hidden" name="part_id" t-att-value="part_id.id"/>
+                                    <input type="text" name="name" t-att-value="part_id.name" required="True"/>
+                                    <button type="submit" class="btn btn-warning btn-sm mt8">Edit</button>
+                                    <a role="button" t-attf-href="/remove/part/#{slug(part_id)}" class="btn btn-sm btn-danger mt8">Remove</a>
+                                </form>
+                            </span>
+                            </h1>
+                        </td>
+                    </tr>
+                    <tr id="description" t-if="part_id.description">
+                        <td name="source_item" t-if="source_id">
+                            <span t-field="source_id.description"/>
+                        </td>
+                        <td>
+                            <span t-field="part_id.description"/>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td t-if="source_id"/>
+                        <td>
+                            <t t-call="website_openbiblica.line_pager" >
+                                <t t-set="classname">float-right</t>
+                            </t>
+                        </td>
+                    </tr>
+                    <tr t-foreach="line_results" t-as="main_line">
+                        <t t-set="l" t-value="main_line.sequence - 1"/>
+                        <td name="source_item" width="50%" style="padding: 15px;" t-if="source_id">
+                            <h5 t-if="len(source_id.line_ids) > l">
+                                <a t-attf-href="/line/#{slug(source_id.line_ids[l])}">
+                                        <span t-if="source_id.line_ids[l].chapter" t-field="source_id.line_ids[l].chapter"/>
+                                        <span t-if="source_id.line_ids[l].chapter_alt">(<t t-esc="source_id.line_ids[l].chapter_alt"/>)</span>
+                                        <span t-if="source_id.line_ids[l].verse"> : <t t-esc="source_id.line_ids[l].verse"/></span>
+                                        <span t-if="source_id.line_ids[l].verse_char" t-field="source_id.line_ids[l].verse_char"/>
+                                        <span t-if="source_id.line_ids[l].verse_alt">(<t t-esc="source_id.line_ids[l].verse_alt"/>)</span>
+                                </a>
+                                <t t-if="source_id.line_ids[l].is_interlinear" t-call="website_openbiblica.core_interlinear_line">
+                                    <t t-set="line_id" t-value="source_id.line_ids[l]"/>
+                                </t>
+                                <t t-else="">
+                                    <span t-field="source_id.line_ids[l].content"/>
+                                </t>
+                            </h5>
+                        </td>
+                        <td name='hide_items' style="padding: 15px;">
+                            <h5 t-if="len(part_id.line_ids) > l">
+                                <a t-attf-href="/line/#{slug(part_id.line_ids[l])}">
+                                        <span t-if="part_id.line_ids[l].chapter" t-field="part_id.line_ids[l].chapter"/>
+                                        <span t-if="part_id.line_ids[l].chapter_alt">(<t t-esc="part_id.line_ids[l].chapter_alt"/>)</span>
+                                        <span t-if="part_id.line_ids[l].verse"> : <t t-esc="part_id.line_ids[l].verse"/></span>
+                                        <span t-if="part_id.line_ids[l].verse_char" t-field="part_id.line_ids[l].verse_char"/>
+                                        <span t-if="part_id.line_ids[l].verse_alt">(<t t-esc="part_id.line_ids[l].verse_alt"/>)</span>
+                                </a>
+                                <t t-if="part_id.line_ids[l].is_interlinear" t-call="website_openbiblica.core_interlinear_line">
+                                    <t t-set="line_id" t-value="part_id.line_ids[l]"/>
+                                </t>
+                                <t t-else="">
+                                    <span t-field="part_id.line_ids[l].content"/>
+                                </t>
+                            </h5>
+                        </td>
+                        <td name='show_items' style="display:none;">
+                            <t t-call="website_openbiblica.edit_line_form" t-if="len(part_id.line_ids) > l">
+                                <t t-set="line" t-value="part_id.line_ids[l]"/>
+                            </t>
+                        </td>
+                    </tr>
+                    <tr t-if="part_id.create_id == user_id" name='show_items' style="display:none;">
+                        <td name="source_item" t-if="source_id"/>
+                        <td>
+                            <t t-call="website_openbiblica.add_line_form"/>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td t-if="source_id"/>
+                        <td>
+                            <t t-call="website_openbiblica.line_pager" >
+                                <t t-set="classname">float-right</t>
+                            </t>
+                        </td>
+                    </tr>
+                </table>
+                <div class="mt32 mb32 row" align="center">
+                    <div class="col">
+                        <form id="prev_form" t-attf-action="/part/#{slug(prev_id)}" method="post" role="form"
+                              class="tag_text js_website_submit_form" t-if="prev_id">
+                            <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                            <input type="hidden" name="select_source" t-att-value="source_id.content_id.id"/>
+                            <input type="hidden" name="select_lang" t-att-value="s_lang"/>
+                            <button id="prev_id_button" type="submit" class="btn btn-sm btn-primary">Prev Chapter</button>
+                        </form>
+                    </div>
+                    <div><a href="javascript: window.history.back()" class="btn btn-sm btn-danger">Back</a></div>
+                    <div class="col">
+                        <form id="next_form" t-attf-action="/part/#{slug(next_id)}" method="post" role="form"
+                              class="tag_text js_website_submit_form" t-if="next_id">
+                            <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                            <input type="hidden" name="select_source" t-att-value="source_id.content_id.id"/>
+                            <input type="hidden" name="select_lang" t-att-value="s_lang"/>
+                            <button id="next_id_button" type="submit" class="btn btn-sm btn-primary">Next Chapter</button>
+                        </form>
+                    </div>
+                </div>
+                <t t-call="website_openbiblica.forum">
+                    <t t-set="part_forum" t-value="True"/>
+                </t>
+            </div>
+        </t>
+    </template>
+
+    <template id="post_part_comment">
+        <h5>Add a Comment</h5>
+        <form t-attf-action="/comment/p/#{slug(part_id)}" method="post" class="js_website_submit_form" role="form">
+            <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+            <textarea name="content" class="form-control load_editor" required="True"/>
+            <button type="submit">Post Comment</button>
+        </form>
+    </template>
+
+    <template id="part_table">
+        <table class="table" style="table-layout: fixed; width: 100%;">
+            <tr t-foreach="part_id.line_ids" t-as="line">
+                <td name='hide_items'>
+                    <a t-attf-href="/line/#{slug(line)}">
+                        <h5>
+                            <span t-if="line.chapter" t-field="line.chapter"/>
+                            <span t-if="line.chapter_alt">(<t t-esc="line.chapter_alt"/>)</span>
+                            <span t-if="line.verse"> : <t t-esc="line.verse"/></span>
+                            <span t-if="line.verse_char" t-field="line.verse_char"/>
+                            <span t-if="line.verse_alt">(<t t-esc="line.verse_alt"/>)</span>
+                            <t t-if="line.is_interlinear" t-call="website_openbiblica.core_interlinear_line">
+                                <t t-set="line_id" t-value="line"/>
+                            </t>
+                            <t t-else="">
+                                <span t-field="line.content"/>
+                            </t>
+                        </h5>
+                    </a>
+                </td>
+                <td name='show_items' style="display:none;">
+                    <t t-call="website_openbiblica.edit_line_form"/>
+                </td>
+            </tr>
+            <tr t-if="part_id.create_id == user_id">
+                <!--<td><a href="#add_new" id="add_new" class="btn btn-sm btn-warning">Add New Line</a></td>-->
+                <!--<td name='show_items' style="display:none;">-->
+                <td>
+                    <t t-call="website_openbiblica.add_line_form"/>
+                </td>
+            </tr>
+        </table>
+    </template>
+
+    <template id="edit_line_form">
+        <form id="edit_line" t-attf-action="/edit/line" method="post" role="form"
+              t-if="part_id.create_id == user_id" class="tag_text js_website_submit_form">
+            <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+            <input type="hidden" name="line_id" t-att-value="line.id"/>
+            <ul>
+                <input class="col-md-2" type="text" name="chapter" t-att-value="line.chapter"/>
+                (<input class="col-md-2" type="text" name="chapter_alt" t-att-value="line.chapter_alt"/>)
+                 : <input class="col-md-2" type="text" name="verse" t-att-value="line.verse"/>
+                (<input class="col-md-2" type="text" name="verse_alt" t-att-value="line.verse_alt"/>)
+                <input class="col-md-2" type="text" name="verse_char" t-att-value="line.verse_char"/>
+            </ul>
+            <ul>
+                <textarea name="content" id="content" required="True" class="form-control load_editor">
+                    <t t-if="line" t-esc="line.content"/>
+                </textarea>
+            </ul>
+            <ul>
+                <button type="submit" class="btn btn-warning mt8 btn-sm">Edit</button>
+                <a role="button" t-attf-href="/remove/line/#{slug(line)}" class="btn btn-sm btn-danger mt8">Remove</a>
+                <a role="button" t-attf-href="/up/line/#{slug(line)}" class="btn btn-sm btn-primary mt8">Up</a>
+                <a role="button" t-attf-href="/down/line/#{slug(line)}" class="btn btn-sm btn-primary mt8">Down</a>
+            </ul>
+        </form>
+    </template>
+
+    <template id="add_line_form">
+         <form t-attf-action="/add/line" method="post" role="form" class="tag_text js_website_submit_form mt16">
+            <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+            <input type="hidden" name="part_id" t-att-value="part_id.id"/>
+            <ul>
+                <input class="col-md-2" type="text" name="chapter" placeholder="Chapter"/>
+                (<input class="col-md-2" type="text" name="chapter_alt" placeholder="Alternative"/>)
+                  :  <input class="col-md-2" type="text" name="verse" placeholder="Verse"/>
+                (<input class="col-md-2" type="text" name="verse_alt" placeholder="Alternative"/>)
+                <input class="col-md-2" type="text" name="verse_char" placeholder="Character"/>
+            </ul>
+            <ul>
+                <textarea name="content" id="content" required="True" class="form-control load_editor"/>
+            </ul>
+            <ul><button type="submit" class="btn btn-primary mt8 btn-sm">Add New Line</button></ul>
+        </form>
+   </template>
+
+    <template id="line_pager" name="line_pager">
+        <ul t-if="line_pager['page_count'] > 1" t-attf-class="#{ classname or '' } pagination m-0 #{_classes}" t-att-style="style or None">
+            <li t-attf-class="page-item #{'disabled' if line_pager['page']['num'] == 1 else ''}">
+                <a t-att-href=" line_pager['page_previous']['url'] if line_pager['page']['num'] != 1 else None" class="page-link">Prev</a>
+            </li>
+            <t t-foreach="line_pager['pages']" t-as="page">
+                <li t-attf-class="page-item #{'active' if page['num'] == line_pager['page']['num'] else ''}">
+                    <a t-att-href="page['url']" class="page-link" t-raw="page['num']"/></li>
+            </t>
+            <li t-attf-class="page-item #{'disabled' if line_pager['page']['num'] == line_pager['page_count'] else ''}">
+                <a t-att-href="line_pager['page_next']['url'] if line_pager['page']['num'] != line_pager['page_count'] else None" class="page-link">Next</a>
+            </li>
+        </ul>
+    </template>
+
+
+</odoo>

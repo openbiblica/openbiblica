@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="export_book" inherit_id="website_openbiblica.view_content">
+        <xpath expr="//tr[@id='install']" position="after">
+            <tr id="export_usfm" t-if="biblica_id.create_id == user_id" groups="website.group_website_publisher">
+                <td>Export to USFM</td>
+                <td name='source_usfm'/>
+                <td>
+                    <a role="button" t-attf-href="/install/b/usfm/#{slug(biblica_id)}" class="btn btn-sm btn-danger">Install USFM</a>
+                </td>
+            </tr>
+        </xpath>
+    </template>
+</odoo>

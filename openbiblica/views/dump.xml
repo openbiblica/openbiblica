@@ -1,0 +1,411 @@
+<!-- COVER -->
+        <record id="view_cover_form" model="ir.ui.view">
+            <field name="name">open.cover.form</field>
+            <field name="model">open.cover</field>
+            <field name="arch" type="xml">
+                <form string="Cover">
+                    <sheet>
+                        <div class="oe_button_box" name="button_box">
+                            <button name="toggle_active" type="object" groups="base.group_user"
+                                    class="oe_stat_button" icon="fa-archive">
+                                <field name="active" widget="boolean_button"
+                                    options='{"terminology": "archive"}'/>
+                            </button>
+                            <button name="toggle_open" type="object" groups="base.group_user"
+                                    class="oe_stat_button" icon="fa-archive">
+                                <field name="open_project" widget="boolean_button"
+                                    options='{"open": "close"}'/>
+                            </button>
+                        </div>
+                        <div id="o_cover_container"><div id="o_cover_main">
+                        <div class="oe_title">
+                            <label for="name" class="oe_edit_only"/>
+                            <h1>
+                                <field name="name" placeholder="Cover Name"/>
+                            </h1>
+                        </div>
+                        <group>
+                            <field name="sequence"/>
+                            <field name="status"/>
+                            <field name="biblica_id"/>
+                            <field name="create_id"/>
+                            <field name="create_date"/>
+                            <field name="write_date"/>
+                            <field name="images"/>
+                        </group>
+                        <notebook>
+                            <page name="forum" string="Forum">
+                                <group>
+                                    <group string="Forum">
+                                        <field name="forum_id"/>
+                                    </group>
+                                    <group string="Post">
+                                    </group>
+                                </group>
+                            </page>
+                        </notebook>
+                        </div></div>
+                    </sheet>
+                    <div class="oe_chatter">
+                        <field name="message_follower_ids" widget="mail_followers" groups="base.group_user"/>
+                        <field name="message_ids" widget="mail_thread"/>
+                    </div>
+                </form>
+            </field>
+        </record>
+
+        <record id="view_cover_tree" model="ir.ui.view">
+            <field name="name">open.cover.tree</field>
+            <field name="model">open.cover</field>
+            <field name="arch" type="xml">
+                <tree string="Cover">
+                    <field name="sequence"/>
+                    <field name="name"/>
+                    <field name="create_id"/>
+                    <field name="write_date"/>
+                    <field name="views"/>
+                </tree>
+            </field>
+        </record>
+
+        <record id="view_cover_filter" model="ir.ui.view">
+            <field name="name">open.cover.search</field>
+            <field name="model">open.cover</field>
+            <field name="arch" type="xml">
+                <search string="Cover">
+                    <field name="name" string="Cover" filter_domain="['|',('title','ilike',self),('name','ilike',self)]"/>
+                    <filter string="Archived" name="inactive" domain="[('active','=',False)]"/>
+                    <separator/>
+                    <group expand="0" string="Group By">
+                        <filter name="group_creator" string="Author" domain="[]" context="{'group_by':'create_id'}"/>
+                    </group>
+                </search>
+             </field>
+         </record>
+
+        <record id="open_view_cover_tree" model="ir.actions.act_window">
+            <field name="name">Cover</field>
+            <field name="res_model">open.cover</field>
+            <field name="view_type">tree</field>
+            <field name="view_mode">tree,form</field>
+            <field name="view_id" ref="view_cover_tree"/>
+            <field name="search_view_id" ref="view_cover_filter"/>
+        </record>
+
+        <record id="open_view_cover_list_short" model="ir.actions.act_window">
+            <field name="name">Cover</field>
+            <field name="res_model">open.cover</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">form,tree</field>
+            <field name="view_id" eval="False"/>
+            <field name="search_view_id" ref="view_cover_filter"/>
+        </record>
+
+        <record id="open_view_cover_list" model="ir.actions.act_window">
+            <field name="name">Cover</field>
+            <field name="res_model">open.cover</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form,activity</field>
+            <field name="domain">[]</field>
+            <field name="context">{}</field>
+            <field name="view_id" eval="False"/>
+            <field name="search_view_id" ref="view_cover_filter"/>
+            <field name="help" type="html">
+              <p class="o_view_nocontent_smiling_face">
+                Add a new cover
+              </p>
+            </field>
+        </record>
+
+        <menuitem id="menu_cover_main" name="Biblica Covers"
+                  action="open_view_cover_list"
+                  parent="menu_biblica" sequence="2"/>
+
+<!-- SECTION -->
+        <record id="view_section_form" model="ir.ui.view">
+            <field name="name">open.section.form</field>
+            <field name="model">open.section</field>
+            <field name="arch" type="xml">
+                <form string="Section">
+                    <sheet>
+                        <div class="oe_button_box" name="button_box">
+                            <button name="toggle_active" type="object" groups="base.group_user"
+                                    class="oe_stat_button" icon="fa-archive">
+                                <field name="active" widget="boolean_button"
+                                    options='{"terminology": "archive"}'/>
+                            </button>
+                            <button name="toggle_open" type="object" groups="base.group_user"
+                                    class="oe_stat_button" icon="fa-archive">
+                                <field name="open_project" widget="boolean_button"
+                                    options='{"open": "close"}'/>
+                            </button>
+                        </div>
+                        <div id="o_section_container"><div id="o_section_main">
+                        <div class="oe_title">
+                            <label for="name" class="oe_edit_only"/>
+                            <h1>
+                                <field name="name" placeholder="Section Name"/>
+                            </h1>
+                        </div>
+                        <div class="oe_title">
+                            <label for="description" class="oe_edit_only"/>
+                            <h2>
+                                <field name="description" placeholder="Section Description"/>
+                            </h2>
+                        </div>
+                        <group>
+                            <field name="sequence"/>
+                            <field name="status"/>
+                            <field name="type"/>
+                            <field name="biblica_id"/>
+                            <field name="lang_id"/>
+                            <field name="create_id"/>
+                            <field name="create_date"/>
+                            <field name="write_date"/>
+                        </group>
+                        <notebook>
+                            <page name="text" string="Texts">
+                                <group string="Texts">
+                                    <field name="text_ids"/>
+                                </group>
+                            </page>
+                            <page name="source" string="Source">
+                                <group string="Source">
+                                    <field name="source_id"/>
+                                    <field name="source_ids"/>
+                                </group>
+                            </page>
+                            <page name="forum" string="Forum">
+                                <group>
+                                    <group string="Forum">
+                                        <field name="forum_id"/>
+                                    </group>
+                                    <group string="Post">
+                                    </group>
+                                </group>
+                            </page>
+                        </notebook>
+                        </div></div>
+                    </sheet>
+                    <div class="oe_chatter">
+                        <field name="message_follower_ids" widget="mail_followers" groups="base.group_user"/>
+                        <field name="message_ids" widget="mail_thread"/>
+                    </div>
+                </form>
+            </field>
+        </record>
+
+        <record id="view_section_tree" model="ir.ui.view">
+            <field name="name">open.section.tree</field>
+            <field name="model">open.section</field>
+            <field name="arch" type="xml">
+                <tree string="Section">
+                    <field name="sequence"/>
+                    <field name="name"/>
+                    <field name="description"/>
+                    <field name="create_id"/>
+                    <field name="write_date"/>
+                    <field name="views"/>
+                </tree>
+            </field>
+        </record>
+
+        <record id="view_section_filter" model="ir.ui.view">
+            <field name="name">open.section.search</field>
+            <field name="model">open.section</field>
+            <field name="arch" type="xml">
+                <search string="Section">
+                    <field name="name" string="Section" filter_domain="['|',('title','ilike',self),('name','ilike',self)]"/>
+                    <field name="description"/>
+                    <field name="lang_id" />
+                    <filter string="Archived" name="inactive" domain="[('active','=',False)]"/>
+                    <separator/>
+                    <group expand="0" string="Group By">
+                        <filter name="group_creator" string="Author" domain="[]" context="{'group_by':'create_id'}"/>
+                        <filter name="group_language" string="Language" domain="[]" context="{'group_by':'lang_id'}"/>
+                    </group>
+                </search>
+             </field>
+         </record>
+
+        <record id="open_view_section_tree" model="ir.actions.act_window">
+            <field name="name">Section</field>
+            <field name="res_model">open.section</field>
+            <field name="view_type">tree</field>
+            <field name="view_mode">tree,form</field>
+            <field name="view_id" ref="view_section_tree"/>
+            <field name="search_view_id" ref="view_section_filter"/>
+        </record>
+
+        <record id="open_view_section_list_short" model="ir.actions.act_window">
+            <field name="name">Section</field>
+            <field name="res_model">open.section</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">form,tree</field>
+            <field name="view_id" eval="False"/>
+            <field name="search_view_id" ref="view_section_filter"/>
+        </record>
+
+        <record id="open_view_section_list" model="ir.actions.act_window">
+            <field name="name">Section</field>
+            <field name="res_model">open.section</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form,activity</field>
+            <field name="domain">[]</field>
+            <field name="context">{}</field>
+            <field name="view_id" eval="False"/>
+            <field name="search_view_id" ref="view_section_filter"/>
+            <field name="help" type="html">
+              <p class="o_view_nocontent_smiling_face">
+                Add a new section
+              </p>
+            </field>
+        </record>
+
+        <menuitem id="menu_section_main" name="Biblica Sections"
+                  action="open_view_section_list"
+                  parent="menu_biblica" sequence="4"/>
+
+<!-- TEXT -->
+        <record id="view_text_form" model="ir.ui.view">
+            <field name="name">open.text.form</field>
+            <field name="model">open.text</field>
+            <field name="arch" type="xml">
+                <form string="Text">
+                    <sheet>
+                        <div class="oe_button_box" name="button_box">
+                            <button name="toggle_active" type="object" groups="base.group_user"
+                                    class="oe_stat_button" icon="fa-archive">
+                                <field name="active" widget="boolean_button"
+                                    options='{"terminology": "archive"}'/>
+                            </button>
+                            <button name="toggle_open" type="object" groups="base.group_user"
+                                    class="oe_stat_button" icon="fa-archive">
+                                <field name="open_project" widget="boolean_button"
+                                    options='{"open": "close"}'/>
+                            </button>
+                        </div>
+                        <div id="o_text_container"><div id="o_text_main">
+                        <div class="oe_title">
+                            <label for="name" class="oe_edit_only"/>
+                            <h1>
+                                <field name="name" placeholder="Text Plain Content"/>
+                            </h1>
+                        </div>
+                        <group>
+                            <field name="content" placeholder="Text Content"/>
+                            <field name="section_id"/>
+                            <field name="sequence"/>
+                            <field name="page"/>
+                            <field name="lang_id"/>
+                            <field name="create_id"/>
+                            <field name="create_date"/>
+                            <field name="write_date"/>
+                        </group>
+                        <notebook>
+                            <page name="source" string="Source">
+                                <group string="Source">
+                                    <field name="source_id"/>
+                                    <field name="source_ids"/>
+                                </group>
+                            </page>
+                            <page name="forum" string="Forum">
+                                <group>
+                                    <group string="Forum">
+                                        <field name="forum_id"/>
+                                    </group>
+                                    <group string="Post">
+                                        <field name="post_ids"/>
+                                    </group>
+                                </group>
+                            </page>
+                            <page name="team" string="Team">
+                                <group>
+                                    <group string="Colaborators">
+                                        <field name="team_ids"/>
+                                    </group>
+                                    <group string="Approver">
+                                        <field name="approver_ids"/>
+                                    </group>
+                                </group>
+                            </page>
+                        </notebook>
+                        </div></div>
+                    </sheet>
+                    <div class="oe_chatter">
+                        <field name="message_follower_ids" widget="mail_followers" groups="base.group_user"/>
+                        <field name="message_ids" widget="mail_thread"/>
+                    </div>
+                </form>
+            </field>
+        </record>
+
+        <record id="view_text_tree" model="ir.ui.view">
+            <field name="name">open.text.tree</field>
+            <field name="model">open.text</field>
+            <field name="arch" type="xml">
+                <tree string="Text">
+                    <field name="sequence"/>
+                    <field name="name"/>
+                    <field name="create_id"/>
+                    <field name="write_date"/>
+                    <field name="views"/>
+                </tree>
+            </field>
+        </record>
+
+        <record id="view_text_filter" model="ir.ui.view">
+            <field name="name">open.text.search</field>
+            <field name="model">open.text</field>
+            <field name="arch" type="xml">
+                <search string="Text">
+                    <field name="name" string="Text" filter_domain="[('name','ilike',self)]"/>
+                    <field name="lang_id" />
+                    <filter string="Archived" name="inactive" domain="[('active','=',False)]"/>
+                    <separator/>
+                    <group expand="0" string="Group By">
+                        <filter name="group_creator" string="Author" domain="[]" context="{'group_by':'create_id'}"/>
+                        <filter name="group_language" string="Language" domain="[]" context="{'group_by':'lang_id'}"/>
+                    </group>
+                </search>
+             </field>
+         </record>
+
+        <record id="open_view_text_tree" model="ir.actions.act_window">
+            <field name="name">Text</field>
+            <field name="res_model">open.text</field>
+            <field name="view_type">tree</field>
+            <field name="view_mode">tree,form</field>
+            <field name="view_id" ref="view_text_tree"/>
+            <field name="search_view_id" ref="view_text_filter"/>
+        </record>
+
+        <record id="open_view_text_list_short" model="ir.actions.act_window">
+            <field name="name">Text</field>
+            <field name="res_model">open.text</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">form,tree</field>
+            <field name="view_id" eval="False"/>
+            <field name="search_view_id" ref="view_text_filter"/>
+        </record>
+
+        <record id="open_view_text_list" model="ir.actions.act_window">
+            <field name="name">Text</field>
+            <field name="res_model">open.text</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form,activity</field>
+            <field name="domain">[]</field>
+            <field name="context">{}</field>
+            <field name="view_id" eval="False"/>
+            <field name="search_view_id" ref="view_text_filter"/>
+            <field name="help" type="html">
+              <p class="o_view_nocontent_smiling_face">
+                Add a new text
+              </p>
+            </field>
+        </record>
+
+        <menuitem id="menu_text_main" name="Biblica Texts"
+                  action="open_view_text_list"
+                  parent="menu_biblica" sequence="7"/>
+

@@ -1,0 +1,249 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="website_menu_biblicas" model="website.menu">
+        <field name="name">Biblicas</field>
+        <field name="url">/biblicas</field>
+        <field name="parent_id" ref="website.main_menu"/>
+        <field name="sequence" type="int">10</field>
+    </record>
+
+    <template id="portal_my_biblica" inherit_id="portal.portal_my_home" name="My Biblica Project">
+        <xpath expr="//div[@id='oe_structure_portal_my_home_2']" position="after">
+            <table class="table well well-lg" width="100%">
+                <tr>
+                    <td align="left"><h4><span t-field="user_id.name"/>'s Biblica Projects</h4></td>
+                    <td align="right"><a role="button" href="/create/biblica" class="btn btn-sm btn-danger">Create New</a></td>
+                </tr>
+                <tr t-if="user_id.biblica_ids" t-foreach="user_id.biblica_ids" t-as="biblica_id">
+                    <td>
+                        <a t-attf-href="/biblica/#{slug(biblica_id)}">
+                            <h4 t-esc="biblica_id.name"/>
+                        </a>
+                        <a role="button" t-attf-href="/remove/biblica/#{slug(biblica_id)}" class="btn btn-sm btn-danger">Remove this project</a>
+                    </td>
+                </tr>
+            </table>
+        </xpath>
+    </template>
+
+    <template id="assets_frontend" inherit_id="web.assets_frontend" name="Portal Assets">
+        <xpath expr="//script[last()]" position="after">
+            <script type="text/javascript" src="/website_openbiblica/static/src/js/website_openbiblica.js"/>
+        </xpath>
+    </template>
+
+    <template id="portal_search" inherit_id="portal.frontend_layout">
+        <xpath expr="//header" position="inside">
+            <nav class="navbar navbar-expand-sm navbar-light bg-light">
+                <div class="container o_bible_search">
+                    <div class="o_editor divider navbar">
+                        <div id="source_menu" style="display:none; margin-right: 4px;">
+                            <div id="show_source_button" style="display:none;">
+                                <a href="#" name="show_source" id="show_source" class="btn btn-sm btn-primary">Show</a>
+                            </div>
+                            <div id="hide_source_button">
+                                <a href="#" name="hide_source" id="hide_source" class="btn btn-sm btn-warning">Hide</a>
+                            </div>
+                        </div>
+                        <div id="editor_menu" style="display:none; margin-right: 4px;">
+                            <div id="show_button">
+                                <a href="#" name="switch_show" id="show_button" class="btn btn-sm btn-danger">Show</a>
+                            </div>
+                            <div id="hide_button" style="display:none;">
+                                <a href="#" name="switch_hide" id="hide_button" class="btn btn-sm btn-primary">Hide</a>
+                            </div>
+                        </div>
+                        <div id="find_source" style="display:none; margin-right: 4px;"/>
+                        <div id="remove_source" style="display:none; margin-right: 4px;"/>
+                        <div id="translate_this" style="display:none; margin-right: 4px;"/>
+                    </div>
+                    <form t-attf-action="/search/" method="post" role="form" class="tag_text js_website_submit_form">
+                        <button type="button" class="navbar-toggler" data-toggle="collapse" data-target="#search_menu_collapse">
+                            <span>Search</span>
+                        </button>
+                        <div class="collapse navbar-collapse" id="search_menu_collapse">
+                            <ul class="nav navbar-nav ml-auto text-right">
+                                <li><div style="margin-right: 4px;">
+                                    <input type="text" name="search" class="search-query oe_search_box form-control" placeholder="Keyword..." t-att-value="search"/>
+                                </div></li>
+                                <li><div style="margin-right: 4px;">
+                                    <select name="language_id" class="form-control">
+                                        <option value="">Language...</option>
+                                    </select>
+                                </div></li>
+                                <li><div style="margin-right: 4px;">
+                                    <select name="bible_id" class="form-control">
+                                        <option value="">Biblica...</option>
+                                    </select>
+                                </div></li>
+                                <li><div style="margin-right: 4px;">
+                                    <select name="book_id" class="form-control">
+                                        <option value="">Book...</option>
+                                    </select>
+                                </div></li>
+                                <li><div style="margin-right: 4px;">
+                                    <select name="part_id" class="form-control">
+                                        <option value="">Chapter...</option>
+                                    </select>
+                                </div></li>
+                                <li><div style="margin-right: 4px;">
+                                    <select name="verse_id" class="form-control">
+                                        <option value="">Verse...</option>
+                                    </select>
+                                </div></li>
+                                <li><div><button type="submit" class="btn btn-primary btn-sm">Search</button></div></li>
+                            </ul>
+                        </div>
+                    </form>
+                </div>
+            </nav>
+            <!--<nav class="navbar navbar-expand-sm navbar-light bg-light">-->
+                <!--<div class="container navbar-collapse o_editor">-->
+                    <!--<div id="source_menu" style="display:none; margin-right: 4px;">-->
+                        <!--<div id="show_source_button" style="display:none;">-->
+                            <!--<a href="#" name="show_source" id="show_source" class="btn btn-sm btn-primary">Show</a>-->
+                        <!--</div>-->
+                        <!--<div id="hide_source_button">-->
+                            <!--<a href="#" name="hide_source" id="hide_source" class="btn btn-sm btn-warning">Hide</a>-->
+                        <!--</div>-->
+                    <!--</div>-->
+                    <!--<div id="editor_menu" style="display:none; margin-right: 4px;">-->
+                        <!--<div id="show_button">-->
+                            <!--<a href="#" name="switch_show" id="show_button" class="btn btn-sm btn-danger">Show</a>-->
+                        <!--</div>-->
+                        <!--<div id="hide_button" style="display:none;">-->
+                            <!--<a href="#" name="switch_hide" id="hide_button" class="btn btn-sm btn-primary">Hide</a>-->
+                        <!--</div>-->
+                    <!--</div>-->
+                    <!--<div id="find_source" style="display:none; margin-right: 4px;"/>-->
+                    <!--<div id="remove_source" style="display:none; margin-right: 4px;"/>-->
+                    <!--<div id="translate_this" style="display:none; margin-right: 4px;"/>-->
+                <!--</div>-->
+            <!--</nav>-->
+        </xpath>
+    </template>
+
+    <template id="layout" inherit_id="website.layout" name="Biblica Layout" primary="True">
+        <xpath expr="//t[@t-call-assets='web_editor.summernote'][@t-js='false']" position="attributes">
+            <attribute name="groups"/>
+        </xpath>
+        <xpath expr="//t[@t-call-assets='web_editor.summernote'][@t-css='false']" position="attributes">
+            <attribute name="groups"/>
+        </xpath>
+    </template>
+
+    <template id="openbiblica_layout">
+        <t t-call="website_openbiblica.layout">
+            <div id="wrap">
+                <div class="container"/>
+                <t t-raw="0"/>
+                <div class="oe_structure" id="oe_structure_website_openbiblica_layout_1"/>
+            </div>
+        </t>
+    </template>
+
+    <template id="view_search" name="Search Result">
+        <t t-call="website_openbiblica.openbiblica_layout">
+            <div class="container">
+                <div class="row">
+                    <div class="col-lg-12 pt16 pb16" style="text-align: center;">
+                        <h4><font style="font-size: 62px;">Search List</font></h4>
+                        <!--<span>-->
+                            <!--Sort by:-->
+                            <!--<a t-att-href="url_for('') + '?' + keep_query( 'search_item', sorting='content_seq asc')" class="btn btn-default">Book</a>-->
+                            <!--<a t-att-href="url_for('') + '?' + keep_query( 'search_item', sorting='part_seq asc')" class="btn btn-default">Chapter</a>-->
+                            <!--<a t-att-href="url_for('') + '?' + keep_query( 'search_item', sorting='sequence asc')" class="btn btn-default">Verse</a>-->
+                        <!--</span>-->
+                        <form t-attf-action="/search/" method="post" role="form" class="tag_text js_website_submit_form">
+                            <input type="text" name="search" class="search-query oe_search_box" placeholder="Search..." t-att-value="search"/>
+                            <button type="submit" class="btn btn-primary btn-sm">Search</button>
+                        </form>
+                    </div>
+                </div>
+                <table class="table table-striped">
+                    <tr t-if="len(results)">
+                        <td colspan="2">
+                            <span t-esc='len(results)'/> from <span t-esc='total'/> match found
+                            <t t-call="website.pager" >
+                                <t t-set="classname">float-right</t>
+                            </t>
+                        </td>
+                    </tr>
+                    <tr t-if="len(results)" t-foreach="results" t-as="res">
+                        <td>
+                            <a t-attf-href="/line/#{(res.id)}/#{s_lang}">
+                                <h5><span t-field="res.content_id" /> <span t-field="res.part_id" /> : <span t-field="res.verse" /></h5>
+                            </a>
+                        </td>
+                        <td>
+                            <h5 t-field="res.name" />
+                        </td>
+                    </tr>
+                    <tr t-if="len(results)">
+                        <td colspan="2">
+                            <t t-call="website.pager" >
+                                <t t-set="classname">float-right</t>
+                            </t>
+                        </td>
+                    </tr>
+                    <tr t-else=""><td align="center">
+                        <h4>Sorry, we can't find what you are looking for.<br/>
+                        Please search again.</h4></td></tr>
+                </table>
+            </div>
+        </t>
+    </template>
+
+    <template id="view_lang">
+        <t t-call="website_openbiblica.openbiblica_layout">
+            <div class="container o_editor">
+                <table class="table">
+                    <tr>
+                        <th colspan="2"><h1>Biblicas in <span t-field="lang_id.name"/></h1></th>
+                    </tr>
+                    <tr t-foreach="biblicas" t-as="biblica">
+                        <td><a role="button" t-attf-href="/biblica/#{slug(biblica)}"><h3 t-field="biblica.name"/></a></td>
+                        <td><h3 t-field="biblica.create_id"/></td>
+                    </tr>
+                </table>
+                <div class="mt32 mb32" align="center">
+                    <span><a href="javascript: window.history.back()" class="btn btn-sm btn-danger">Back</a></span>
+                </div>
+            </div>
+        </t>
+    </template>
+
+    <template id="forum">
+        <table id="forum" class="table table-sm col-md-8 mt32" align="center">
+            <t t-if="results">
+                <tr>
+                    <th>Comments:
+                        <t t-call="website.pager" >
+                            <t t-set="classname">float-right</t>
+                        </t>
+                    </th>
+                </tr>
+                <tr t-foreach="results" t-as="post">
+                    <td>
+                        <t t-call="website_forum.post_answers">
+                            <t t-set="answer" t-value="post"/>
+                            <t t-set="question" t-value="topic"/>
+                            <t t-set="forum" t-value="topic.forum_id"/>
+                            <t t-set="user" t-value="user_id"/>
+                        </t>
+                    </td>
+                </tr>
+            </t>
+            <tr>
+                <td>
+                    <t t-call="website_openbiblica.post_line_comment" t-if="line_forum"/>
+                    <t t-call="website_openbiblica.post_part_comment" t-if="part_forum"/>
+                    <t t-call="website_openbiblica.post_content_comment" t-if="content_forum"/>
+                    <t t-call="website_openbiblica.post_biblica_comment" t-if="biblica_forum"/>
+                    <t t-call="website_openbiblica.post_word_comment" t-if="word_forum"/>
+                </td>
+            </tr>
+        </table>
+    </template>
+
+</odoo>

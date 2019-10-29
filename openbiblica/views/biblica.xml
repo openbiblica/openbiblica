@@ -1,0 +1,861 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <menuitem id="menu_biblica" name="Biblica"
+                  groups="base.group_user"
+                  sequence="10"/>
+<!-- BIBLICA -->
+        <record id="view_biblica_form" model="ir.ui.view">
+            <field name="name">open.biblica.form</field>
+            <field name="model">open.biblica</field>
+            <field name="arch" type="xml">
+                <form string="Biblica">
+                    <sheet>
+                        <div class="oe_button_box" name="button_box">
+                            <button name="toggle_active" type="object" groups="base.group_user"
+                                    class="oe_stat_button" icon="fa-archive">
+                                <field name="active" widget="boolean_button"
+                                    options='{"terminology": "archive"}'/>
+                            </button>
+                            <button name="toggle_open" type="object" groups="base.group_user"
+                                    class="oe_stat_button" icon="fa-archive">
+                                <field name="open_project" widget="boolean_button"
+                                    options='{"open": "close"}'/>
+                            </button>
+                        </div>
+                        <div id="o_biblica_container"><div id="o_biblica_main">
+                        <div class="oe_title">
+                            <label for="name" class="oe_edit_only"/>
+                            <h1>
+                                <field name="name" placeholder="Biblica Project's Name"/>
+                            </h1>
+                        </div>
+                        <div class="oe_title">
+                            <label for="description" class="oe_edit_only"/>
+                            <h2>
+                                <field name="description" placeholder="Biblica Project's Description"/>
+                            </h2>
+                        </div>
+                        <group>
+                            <field name="lang_id"/>
+                            <field name="create_id"/>
+                            <field name="create_date"/>
+                            <field name="write_date"/>
+                            <field name="is_installed"/>
+                            <field name="is_interlinear"/>
+                        </group>
+                        <notebook>
+                            <page name="content" string="Contents">
+                                <group string="Content">
+                                    <field name="content_ids"/>
+                                </group>
+                            </page>
+                            <page name="source" string="Source">
+                                <group string="Source">
+                                    <field name="source_id"/>
+                                    <field name="source_ids"/>
+                                </group>
+                            </page>
+                            <page name="forum" string="Forum">
+                                <group>
+                                    <group string="Forum">
+                                        <field name="forum_id"/>
+                                    </group>
+                                    <group string="Post">
+                                        <field name="post_ids"/>
+                                    </group>
+                                </group>
+                            </page>
+                            <page name="team" string="Team">
+                                <group>
+                                    <group string="Colaborators">
+                                        <field name="team_ids"/>
+                                    </group>
+                                    <group string="Approver">
+                                        <field name="approver_ids"/>
+                                    </group>
+                                </group>
+                            </page>
+                        </notebook>
+                        </div></div>
+                    </sheet>
+                    <div class="oe_chatter">
+                        <field name="message_follower_ids" widget="mail_followers" groups="base.group_user"/>
+                        <field name="message_ids" widget="mail_thread"/>
+                    </div>
+                </form>
+            </field>
+        </record>
+
+        <record id="view_biblica_tree" model="ir.ui.view">
+            <field name="name">open.biblica.tree</field>
+            <field name="model">open.biblica</field>
+            <field name="arch" type="xml">
+                <tree string="Biblica">
+                    <field name="name"/>
+                    <field name="description"/>
+                    <field name="create_id"/>
+                    <field name="write_date"/>
+                    <field name="views"/>
+                </tree>
+            </field>
+        </record>
+
+        <record id="view_biblica_filter" model="ir.ui.view">
+            <field name="name">open.biblica.search</field>
+            <field name="model">open.biblica</field>
+            <field name="arch" type="xml">
+                <search string="Biblica">
+                    <field name="name" string="Biblica" filter_domain="['|',('description','ilike',self),('name','ilike',self)]"/>
+                    <field name="description"/>
+                    <field name="lang_id" />
+                    <filter string="Archived" name="inactive" domain="[('active','=',False)]"/>
+                    <separator/>
+                    <group expand="0" string="Group By">
+                        <filter name="group_creator" string="Author" domain="[]" context="{'group_by':'create_id'}"/>
+                        <filter name="group_language" string="Language" domain="[]" context="{'group_by':'lang_id'}"/>
+                    </group>
+                </search>
+             </field>
+         </record>
+
+        <record id="open_view_biblica_tree" model="ir.actions.act_window">
+            <field name="name">Biblica</field>
+            <field name="res_model">open.biblica</field>
+            <field name="view_type">tree</field>
+            <field name="view_mode">tree,form</field>
+            <field name="view_id" ref="view_biblica_tree"/>
+            <field name="search_view_id" ref="view_biblica_filter"/>
+        </record>
+
+        <record id="open_view_biblica_list_short" model="ir.actions.act_window">
+            <field name="name">Biblica</field>
+            <field name="res_model">open.biblica</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">form,tree</field>
+            <field name="view_id" eval="False"/>
+            <field name="search_view_id" ref="view_biblica_filter"/>
+        </record>
+
+        <record id="open_view_biblica_list" model="ir.actions.act_window">
+            <field name="name">Biblica</field>
+            <field name="res_model">open.biblica</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form,activity</field>
+            <field name="domain">[]</field>
+            <field name="context">{}</field>
+            <field name="view_id" eval="False"/>
+            <field name="search_view_id" ref="view_biblica_filter"/>
+            <field name="help" type="html">
+              <p class="o_view_nocontent_smiling_face">
+                Add a new biblica project
+              </p>
+            </field>
+        </record>
+
+        <menuitem id="menu_biblica_main" name="Biblica Project"
+                  action="open_view_biblica_list"
+                  parent="menu_biblica" sequence="1"/>
+
+<!-- CONTENT -->
+        <record id="view_content_form" model="ir.ui.view">
+            <field name="name">open.content.form</field>
+            <field name="model">open.content</field>
+            <field name="arch" type="xml">
+                <form string="Content">
+                    <sheet>
+                        <div class="oe_button_box" name="button_box">
+                            <button name="toggle_active" type="object" groups="base.group_user"
+                                    class="oe_stat_button" icon="fa-archive">
+                                <field name="active" widget="boolean_button"
+                                    options='{"terminology": "archive"}'/>
+                            </button>
+                            <button name="toggle_open" type="object" groups="base.group_user"
+                                    class="oe_stat_button" icon="fa-archive">
+                                <field name="open_project" widget="boolean_button"
+                                    options='{"open": "close"}'/>
+                            </button>
+                        </div>
+                        <div id="o_content_container">
+                            <div id="o_content_main">
+                                <div class="oe_title">
+                                    <label for="name" class="oe_edit_only"/>
+                                    <h1>
+                                        <field name="name" placeholder="Content Name"/>
+                                    </h1>
+                                </div>
+                                <div class="oe_title">
+                                    <label for="description" class="oe_edit_only"/>
+                                    <h2>
+                                        <field name="description" placeholder="Content Description"/>
+                                    </h2>
+                                </div>
+                            <group>
+                                <field name="title_id" placeholder="File Identifier"/>
+                                <field name="title_ide" placeholder="Encoding specification"/>
+                                <field name="title" placeholder="Content Title"/>
+                                <field name="title_short" placeholder="Content Short Title"/>
+                                <field name="title_abrv" placeholder="Content Abbreviation Title"/>
+                                <field name="sequence"/>
+                                <field name="status"/>
+                                <field name="bundle"/>
+                                <field name="biblica_id"/>
+                                <field name="lang_id"/>
+                                <field name="create_id"/>
+                                <field name="create_date"/>
+                                <field name="write_date"/>
+                                <field name="files"/>
+                            </group>
+                            <notebook>
+                                <page name="part" string="Parts">
+                                    <group string="SubContent">
+                                        <field name="subcontent_ids"/>
+                                    </group>
+                                    <group string="Parts">
+                                        <field name="part_ids"/>
+                                    </group>
+                                </page>
+                                <page name="source" string="Source">
+                                    <group string="Source">
+                                        <field name="source_id"/>
+                                        <field name="source_ids"/>
+                                    </group>
+                                </page>
+                                <page name="transcription" string="Transcription">
+                                    <group string="Transcription">
+                                        <field name="is_installed"/>
+                                        <field name="is_interlinear"/>
+                                        <field name="is_transcription"/>
+                                        <!--<field name="manuscript_id"/>-->
+                                        <!--<field name="manuscript_ids"/>-->
+                                    </group>
+                                </page>
+                                <page name="forum" string="Forum">
+                                    <group>
+                                        <group string="Forum">
+                                            <field name="forum_id"/>
+                                        </group>
+                                        <group string="Post">
+                                        </group>
+                                    </group>
+                                </page>
+                            </notebook>
+                        </div>
+                        </div>
+                    </sheet>
+                    <div class="oe_chatter">
+                        <field name="message_follower_ids" widget="mail_followers" groups="base.group_user"/>
+                        <field name="message_ids" widget="mail_thread"/>
+                    </div>
+                </form>
+            </field>
+        </record>
+
+        <record id="view_content_tree" model="ir.ui.view">
+            <field name="name">open.content.tree</field>
+            <field name="model">open.content</field>
+            <field name="arch" type="xml">
+                <tree string="Content">
+                    <field name="sequence"/>
+                    <field name="name"/>
+                    <field name="title"/>
+                    <field name="description"/>
+                    <field name="create_id"/>
+                    <field name="write_date"/>
+                    <field name="views"/>
+                </tree>
+            </field>
+        </record>
+
+        <record id="view_content_filter" model="ir.ui.view">
+            <field name="name">open.content.search</field>
+            <field name="model">open.content</field>
+            <field name="arch" type="xml">
+                <search string="Content">
+                    <field name="name" string="Content" filter_domain="['|',('title','ilike',self),('name','ilike',self)]"/>
+                    <field name="title"/>
+                    <field name="title_short"/>
+                    <field name="title_abrv"/>
+                    <field name="description"/>
+                    <field name="lang_id" />
+                    <filter string="Archived" name="inactive" domain="[('active','=',False)]"/>
+                    <separator/>
+                    <group expand="0" string="Group By">
+                        <filter name="group_creator" string="Author" domain="[]" context="{'group_by':'create_id'}"/>
+                        <filter name="group_language" string="Language" domain="[]" context="{'group_by':'lang_id'}"/>
+                    </group>
+                </search>
+             </field>
+         </record>
+
+        <record id="open_view_content_tree" model="ir.actions.act_window">
+            <field name="name">Content</field>
+            <field name="res_model">open.content</field>
+            <field name="view_type">tree</field>
+            <field name="view_mode">tree,form</field>
+            <field name="view_id" ref="view_content_tree"/>
+            <field name="search_view_id" ref="view_content_filter"/>
+        </record>
+
+        <record id="open_view_content_list_short" model="ir.actions.act_window">
+            <field name="name">Content</field>
+            <field name="res_model">open.content</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">form,tree</field>
+            <field name="view_id" eval="False"/>
+            <field name="search_view_id" ref="view_content_filter"/>
+        </record>
+
+        <record id="open_view_content_list" model="ir.actions.act_window">
+            <field name="name">Content</field>
+            <field name="res_model">open.content</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form,activity</field>
+            <field name="domain">[]</field>
+            <field name="context">{}</field>
+            <field name="view_id" eval="False"/>
+            <field name="search_view_id" ref="view_content_filter"/>
+            <field name="help" type="html">
+              <p class="o_view_nocontent_smiling_face">
+                Add a new content
+              </p>
+            </field>
+        </record>
+
+        <menuitem id="menu_content_main" name="Biblica Contents"
+                  action="open_view_content_list"
+                  parent="menu_biblica" sequence="3"/>
+
+<!-- PART -->
+        <record id="view_part_form" model="ir.ui.view">
+            <field name="name">open.part.form</field>
+            <field name="model">open.part</field>
+            <field name="arch" type="xml">
+                <form string="Part">
+                    <sheet>
+                        <div class="oe_button_box" name="button_box">
+                            <button name="toggle_active" type="object" groups="base.group_user"
+                                    class="oe_stat_button" icon="fa-archive">
+                                <field name="active" widget="boolean_button"
+                                    options='{"terminology": "archive"}'/>
+                            </button>
+                            <button name="toggle_open" type="object" groups="base.group_user"
+                                    class="oe_stat_button" icon="fa-archive">
+                                <field name="open_project" widget="boolean_button"
+                                    options='{"open": "close"}'/>
+                            </button>
+                        </div>
+                        <div id="o_part_container"><div id="o_part_main">
+                        <div class="oe_title">
+                            <label for="name" class="oe_edit_only"/>
+                            <h1>
+                                <field name="name" placeholder="Part Title"/>
+                            </h1>
+                        </div>
+                        <group>
+                            <field name="sequence"/>
+                            <field name="content_id"/>
+                            <field name="subcontent_id"/>
+                            <field name="attachment"/>
+                            <field name="lang_id"/>
+                            <field name="create_id"/>
+                            <field name="create_date"/>
+                            <field name="write_date"/>
+                        </group>
+                        <notebook>
+                            <page name="line" string="Lines">
+                                <group string="Lines">
+                                    <field name="line_ids"/>
+                                </group>
+                            </page>
+                            <page name="source" string="Source">
+                                <group string="Source">
+                                    <field name="source_id"/>
+                                    <field name="source_ids"/>
+                                </group>
+                            </page>
+                            <page name="transcription" string="Transcription">
+                                <group string="Transcription">
+                                    <field name="is_interlinear"/>
+                                    <field name="is_transcription"/>
+                                    <!--<field name="manuscript_id"/>-->
+                                    <!--<field name="manuscript_ids"/>-->
+                                </group>
+                            </page>
+                            <page name="forum" string="Forum">
+                                <group>
+                                    <group string="Forum">
+                                        <field name="forum_id"/>
+                                    </group>
+                                    <group string="Post">
+                                        <field name="post_ids"/>
+                                    </group>
+                                </group>
+                            </page>
+                            <page name="team" string="Team">
+                                <group>
+                                    <group string="Colaborators">
+                                        <field name="team_ids"/>
+                                    </group>
+                                    <group string="Approver">
+                                        <field name="approver_ids"/>
+                                    </group>
+                                </group>
+                            </page>
+                        </notebook>
+                        </div></div>
+                    </sheet>
+                    <div class="oe_chatter">
+                        <field name="message_follower_ids" widget="mail_followers" groups="base.group_user"/>
+                        <field name="message_ids" widget="mail_thread"/>
+                    </div>
+                </form>
+            </field>
+        </record>
+
+        <record id="view_part_tree" model="ir.ui.view">
+            <field name="name">open.part.tree</field>
+            <field name="model">open.part</field>
+            <field name="arch" type="xml">
+                <tree string="Part">
+                    <field name="sequence"/>
+                    <field name="name"/>
+                    <field name="create_id"/>
+                    <field name="write_date"/>
+                    <field name="views"/>
+                </tree>
+            </field>
+        </record>
+
+        <record id="view_part_filter" model="ir.ui.view">
+            <field name="name">open.part.search</field>
+            <field name="model">open.part</field>
+            <field name="arch" type="xml">
+                <search string="Part">
+                    <field name="name" string="Part" filter_domain="['|',('description','ilike',self),('name','ilike',self)]"/>
+                    <field name="description"/>
+                    <field name="lang_id" />
+                    <filter string="Archived" name="inactive" domain="[('active','=',False)]"/>
+                    <separator/>
+                    <group expand="0" string="Group By">
+                        <filter name="group_creator" string="Author" domain="[]" context="{'group_by':'create_id'}"/>
+                        <filter name="group_language" string="Language" domain="[]" context="{'group_by':'lang_id'}"/>
+                    </group>
+                </search>
+             </field>
+         </record>
+
+        <record id="open_view_part_tree" model="ir.actions.act_window">
+            <field name="name">Part</field>
+            <field name="res_model">open.part</field>
+            <field name="view_type">tree</field>
+            <field name="view_mode">tree,form</field>
+            <field name="view_id" ref="view_part_tree"/>
+            <field name="search_view_id" ref="view_part_filter"/>
+        </record>
+
+        <record id="open_view_part_list_short" model="ir.actions.act_window">
+            <field name="name">Part</field>
+            <field name="res_model">open.part</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">form,tree</field>
+            <field name="view_id" eval="False"/>
+            <field name="search_view_id" ref="view_part_filter"/>
+        </record>
+
+        <record id="open_view_part_list" model="ir.actions.act_window">
+            <field name="name">Part</field>
+            <field name="res_model">open.part</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form,activity</field>
+            <field name="domain">[]</field>
+            <field name="context">{}</field>
+            <field name="view_id" eval="False"/>
+            <field name="search_view_id" ref="view_part_filter"/>
+            <field name="help" type="html">
+              <p class="o_view_nocontent_smiling_face">
+                Add a new part
+              </p>
+            </field>
+        </record>
+
+        <menuitem id="menu_part_main" name="Biblica Parts"
+                  action="open_view_part_list"
+                  parent="menu_biblica" sequence="5"/>
+
+<!-- LINE -->
+        <record id="view_line_form" model="ir.ui.view">
+            <field name="name">open.line.form</field>
+            <field name="model">open.line</field>
+            <field name="arch" type="xml">
+                <form string="Line">
+                    <sheet>
+                        <div class="oe_button_box" name="button_box">
+                            <button name="toggle_active" type="object" groups="base.group_user"
+                                    class="oe_stat_button" icon="fa-archive">
+                                <field name="active" widget="boolean_button"
+                                    options='{"terminology": "archive"}'/>
+                            </button>
+                            <button name="toggle_open" type="object" groups="base.group_user"
+                                    class="oe_stat_button" icon="fa-archive">
+                                <field name="open_project" widget="boolean_button"
+                                    options='{"open": "close"}'/>
+                            </button>
+                        </div>
+                        <div id="o_line_container"><div id="o_line_main">
+                        <div class="oe_title">
+                            <label for="name" class="oe_edit_only"/>
+                            <h1>
+                                <field name="name" placeholder="Line Plain Content"/>
+                            </h1>
+                        </div>
+                        <group>
+                            <field name="content" placeholder="Line Content"/>
+                            <field name="part_id"/>
+                            <field name="part_seq"/>
+                            <field name="content_id"/>
+                            <field name="content_seq"/>
+                            <field name="sequence"/>
+                            <field name="chapter"/>
+                            <field name="chapter_alt"/>
+                            <field name="verse"/>
+                            <field name="verse_alt"/>
+                            <field name="verse_char"/>
+                            <field name="page"/>
+                            <field name="insert_paragraph"/>
+                            <field name="insert_breakline"/>
+                            <field name="insert_pagebreak"/>
+                            <field name="lang_id"/>
+                            <field name="create_id"/>
+                            <field name="create_date"/>
+                            <field name="write_date"/>
+                        </group>
+                        <notebook>
+                            <page name="source" string="Source">
+                                <group string="Source">
+                                    <field name="source_id"/>
+                                    <field name="source_ids"/>
+                                </group>
+                            </page>
+                            <page name="words" string="Words">
+                                <group string="Words">
+                                    <field name="point_ids"/>
+                                </group>
+                            </page>
+                            <page name="transcription" string="Transcription">
+                                <group string="Transcription">
+                                    <field name="is_interlinear"/>
+                                    <field name="is_transcription"/>
+                                    <!--<field name="manuscript_id"/>-->
+                                    <!--<field name="manuscript_ids"/>-->
+                                </group>
+                            </page>
+                            <page name="forum" string="Forum">
+                                <group>
+                                    <group string="Forum">
+                                        <field name="forum_id"/>
+                                    </group>
+                                    <group string="Post">
+                                        <field name="post_ids"/>
+                                    </group>
+                                </group>
+                            </page>
+                            <page name="team" string="Team">
+                                <group>
+                                    <group string="Colaborators">
+                                        <field name="team_ids"/>
+                                    </group>
+                                    <group string="Approver">
+                                        <field name="approver_ids"/>
+                                    </group>
+                                </group>
+                            </page>
+                        </notebook>
+                        </div></div>
+                    </sheet>
+                    <div class="oe_chatter">
+                        <field name="message_follower_ids" widget="mail_followers" groups="base.group_user"/>
+                        <field name="message_ids" widget="mail_thread"/>
+                    </div>
+                </form>
+            </field>
+        </record>
+
+        <record id="view_line_tree" model="ir.ui.view">
+            <field name="name">open.line.tree</field>
+            <field name="model">open.line</field>
+            <field name="arch" type="xml">
+                <tree string="Line">
+                    <field name="content_seq"/>
+                    <field name="part_seq"/>
+                    <field name="sequence"/>
+                    <field name="name"/>
+                    <field name="create_id"/>
+                    <field name="write_date"/>
+                    <field name="views"/>
+                </tree>
+            </field>
+        </record>
+
+        <record id="view_line_filter" model="ir.ui.view">
+            <field name="name">open.line.search</field>
+            <field name="model">open.line</field>
+            <field name="arch" type="xml">
+                <search string="Line">
+                    <field name="name" string="Line" filter_domain="[('name','ilike',self)]"/>
+                    <field name="lang_id" />
+                    <filter string="Archived" name="inactive" domain="[('active','=',False)]"/>
+                    <separator/>
+                    <group expand="0" string="Group By">
+                        <filter name="group_creator" string="Author" domain="[]" context="{'group_by':'create_id'}"/>
+                        <filter name="group_language" string="Language" domain="[]" context="{'group_by':'lang_id'}"/>
+                    </group>
+                </search>
+             </field>
+         </record>
+
+        <record id="open_view_line_tree" model="ir.actions.act_window">
+            <field name="name">Line</field>
+            <field name="res_model">open.line</field>
+            <field name="view_type">tree</field>
+            <field name="view_mode">tree,form</field>
+            <field name="view_id" ref="view_line_tree"/>
+            <field name="search_view_id" ref="view_line_filter"/>
+        </record>
+
+        <record id="open_view_line_list_short" model="ir.actions.act_window">
+            <field name="name">Line</field>
+            <field name="res_model">open.line</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">form,tree</field>
+            <field name="view_id" eval="False"/>
+            <field name="search_view_id" ref="view_line_filter"/>
+        </record>
+
+        <record id="open_view_line_list" model="ir.actions.act_window">
+            <field name="name">Line</field>
+            <field name="res_model">open.line</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form,activity</field>
+            <field name="domain">[]</field>
+            <field name="context">{}</field>
+            <field name="view_id" eval="False"/>
+            <field name="search_view_id" ref="view_line_filter"/>
+            <field name="help" type="html">
+              <p class="o_view_nocontent_smiling_face">
+                Add a new line
+              </p>
+            </field>
+        </record>
+
+        <menuitem id="menu_line_main" name="Biblica Lines"
+                  action="open_view_line_list"
+                  parent="menu_biblica" sequence="6"/>
+
+<!-- WORD -->
+        <record id="view_word_form" model="ir.ui.view">
+            <field name="name">open.word.form</field>
+            <field name="model">open.word</field>
+            <field name="arch" type="xml">
+                <form string="Word">
+                    <sheet>
+                        <div class="oe_button_box" name="button_box">
+                            <button name="toggle_active" type="object" groups="base.group_user"
+                                    class="oe_stat_button" icon="fa-archive">
+                                <field name="active" widget="boolean_button"
+                                    options='{"terminology": "archive"}'/>
+                            </button>
+                        </div>
+                        <div id="o_word_container"><div id="o_word_main">
+                        <div class="oe_title">
+                            <label for="name" class="oe_edit_only"/>
+                            <h1>
+                                <field name="name" placeholder="Word Name"/>
+                            </h1>
+                        </div>
+                        <group>
+                            <field name="lang_id"/>
+                            <field name="create_id"/>
+                            <field name="write_uid"/>
+                            <field name="create_date"/>
+                            <field name="write_date"/>
+                        </group>
+                        <notebook>
+                            <page name="dictionary" string="Dictionary">
+                                <group string="Dictionary">
+                                    <field name="dictionary_ids"/>
+                                </group>
+                            </page>
+                            <page name="descriptions" string="Descriptions">
+                                <group string="Descriptions">
+                                    <field name="description_ids"/>
+                                </group>
+                            </page>
+                            <page name="forum" string="Forum">
+                                <group>
+                                    <group string="Forum">
+                                        <field name="forum_id"/>
+                                    </group>
+                                    <group string="Post">
+                                        <field name="post_ids"/>
+                                    </group>
+                                </group>
+                            </page>
+                        </notebook>
+                        </div></div>
+                    </sheet>
+                    <div class="oe_chatter">
+                        <field name="message_follower_ids" widget="mail_followers" groups="base.group_user"/>
+                        <field name="message_ids" widget="mail_thread"/>
+                    </div>
+                </form>
+            </field>
+        </record>
+
+        <record id="view_word_tree" model="ir.ui.view">
+            <field name="name">open.word.tree</field>
+            <field name="model">open.word</field>
+            <field name="arch" type="xml">
+                <tree string="Word">
+                    <field name="name"/>
+                    <field name="lang_id"/>
+                    <field name="write_date"/>
+                </tree>
+            </field>
+        </record>
+
+        <record id="view_word_filter" model="ir.ui.view">
+            <field name="name">open.word.search</field>
+            <field name="model">open.word</field>
+            <field name="arch" type="xml">
+                <search string="Word">
+                    <field name="name" string="Word" filter_domain="[('name','ilike',self)]"/>
+                    <field name="lang_id" />
+                </search>
+             </field>
+         </record>
+
+        <record id="open_view_word_tree" model="ir.actions.act_window">
+            <field name="name">Word</field>
+            <field name="res_model">open.word</field>
+            <field name="view_type">tree</field>
+            <field name="view_mode">tree,form</field>
+            <field name="view_id" ref="view_word_tree"/>
+            <field name="search_view_id" ref="view_word_filter"/>
+        </record>
+
+        <record id="open_view_word_list_short" model="ir.actions.act_window">
+            <field name="name">Word</field>
+            <field name="res_model">open.word</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">form,tree</field>
+            <field name="view_id" eval="False"/>
+            <field name="search_view_id" ref="view_word_filter"/>
+        </record>
+
+        <record id="open_view_word_list" model="ir.actions.act_window">
+            <field name="name">Word</field>
+            <field name="res_model">open.word</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form,activity</field>
+            <field name="domain">[]</field>
+            <field name="context">{}</field>
+            <field name="view_id" eval="False"/>
+            <field name="search_view_id" ref="view_word_filter"/>
+            <field name="help" type="html">
+              <p class="o_view_nocontent_smiling_face">
+                Add a new word
+              </p>
+            </field>
+        </record>
+
+        <menuitem id="menu_word_main" name="Biblica Words"
+                  action="open_view_word_list"
+                  parent="menu_biblica" sequence="8"/>
+
+<!-- MEANING -->
+        <record id="view_meaning_form" model="ir.ui.view">
+            <field name="name">open.meaning.form</field>
+            <field name="model">open.meaning</field>
+            <field name="arch" type="xml">
+                <form string="Meaning">
+                    <sheet>
+                        <div id="o_meaning_container"><div id="o_meaning_main">
+                        <div class="oe_title">
+                            <label for="name" class="oe_edit_only"/>
+                            <h1>
+                                <field name="name" placeholder="Meaning Name"/>
+                            </h1>
+                        </div>
+                        <group>
+                            <field name="lang_id"/>
+                            <field name="word_ids"/>
+                        </group>
+                        </div></div>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <record id="view_meaning_tree" model="ir.ui.view">
+            <field name="name">open.meaning.tree</field>
+            <field name="model">open.meaning</field>
+            <field name="arch" type="xml">
+                <tree string="Meaning">
+                    <field name="name"/>
+                    <field name="lang_id"/>
+                </tree>
+            </field>
+        </record>
+
+        <record id="view_meaning_filter" model="ir.ui.view">
+            <field name="name">open.meaning.search</field>
+            <field name="model">open.meaning</field>
+            <field name="arch" type="xml">
+                <search string="Meaning">
+                    <field name="name" string="Meaning" filter_domain="[('name','ilike',self)]"/>
+                    <field name="lang_id" />
+                </search>
+             </field>
+         </record>
+
+        <record id="open_view_meaning_tree" model="ir.actions.act_window">
+            <field name="name">Meaning</field>
+            <field name="res_model">open.meaning</field>
+            <field name="view_type">tree</field>
+            <field name="view_mode">tree,form</field>
+            <field name="view_id" ref="view_meaning_tree"/>
+            <field name="search_view_id" ref="view_meaning_filter"/>
+        </record>
+
+        <record id="open_view_meaning_list_short" model="ir.actions.act_window">
+            <field name="name">Meaning</field>
+            <field name="res_model">open.meaning</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">form,tree</field>
+            <field name="view_id" eval="False"/>
+            <field name="search_view_id" ref="view_meaning_filter"/>
+        </record>
+
+        <record id="open_view_meaning_list" model="ir.actions.act_window">
+            <field name="name">Meaning</field>
+            <field name="res_model">open.meaning</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form,activity</field>
+            <field name="domain">[]</field>
+            <field name="context">{}</field>
+            <field name="view_id" eval="False"/>
+            <field name="search_view_id" ref="view_meaning_filter"/>
+            <field name="help" type="html">
+              <p class="o_view_nocontent_smiling_face">
+                Add a new meaning
+              </p>
+            </field>
+        </record>
+
+        <menuitem id="menu_meaning_main" name="Biblica Meanings"
+                  action="open_view_meaning_list"
+                  parent="menu_biblica" sequence="10"/>
+
+    </data>
+</odoo>

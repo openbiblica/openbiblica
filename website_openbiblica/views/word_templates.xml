@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <template id="view_point" name="point">
+        <t t-call="website_openbiblica.openbiblica_layout">
+            <div class="container o_word">
+                <!--<div class="o_edit_mode" t-if="point_id.create_id == user_id"/>-->
+                <t t-call="website_openbiblica.word_table"/>
+                <div class="mt32 mb32 row" align="center">
+                    <div class="col" t-if="prev_id">
+                        <a t-attf-href="/point/#{slug(prev_id)}/#{slug(line_id)}/#{lang_id}" class="btn btn-sm btn-primary">Prev</a>
+                    </div>
+                    <div class="col">
+                        <span><a t-attf-href="/part/#{slug(line_id.part_id)}/#{lang_id}" class="btn btn-sm btn-warning">Back to chapter</a></span>
+                    </div>
+                    <div class="col">
+                        <span><a t-attf-href="/line/#{slug(line_id)}/#{lang_id}" class="btn btn-sm btn-warning">Back to line</a></span>
+                    </div>
+                    <div class="col">
+                        <span><a href="javascript: window.history.back()" class="btn btn-sm btn-warning">Back</a></span>
+                    </div>
+                    <div class="col" t-if="next_id">
+                        <a t-attf-href="/point/#{slug(next_id)}/#{slug(line_id)}/#{lang_id}" class="btn btn-sm btn-primary">Next</a>
+                    </div>
+                </div>
+                <t t-call="website_openbiblica.forum">
+                    <t t-set="word_forum" t-value="True"/>
+                </t>
+            </div>
+        </t>
+    </template>
+
+    <template id="view_word" name="word">
+        <t t-call="website_openbiblica.openbiblica_layout">
+            <div class="container o_word">
+                <t t-call="website_openbiblica.word_table"/>
+                <div class="mt32 mb32" align="center" t-if="line_id">
+                    <span><a t-attf-href="/line/#{line_id}" class="btn btn-sm btn-danger">Back to line</a></span>
+                </div>
+                <div class="mt32 mb32" align="center" t-else="">
+                    <span><a href="javascript: window.history.back()" class="btn btn-sm btn-danger">Back</a></span>
+                </div>
+                <t t-call="website_openbiblica.forum">
+                    <t t-set="word_forum" t-value="True"/>
+                </t>
+            </div>
+        </t>
+    </template>
+
+    <template id="post_word_comment">
+        <h5>Add a Comment</h5>
+        <form t-attf-action="/comment/w/#{slug(word_id)}" method="post" class="js_website_submit_form" role="form">
+            <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+            <textarea name="content" class="form-control load_editor" required="True"/>
+            <button type="submit">Post Comment</button>
+        </form>
+    </template>
+
+    <template id="word_table">
+        <table id="word" class="table table-sm col-md-8 mt32" align="center">
+            <tr id="name">
+                <th><h1 id="word_name" align="center" t-esc="word_id.name"/></th>
+            </tr>
+            <tr id="lang_id">
+                <td><h5 align="center" t-esc="word_id.lang_id.name"/></td>
+            </tr>
+            <tr id="select_language">
+                <td align="center">
+                    <select id="select_language" name="select_language" class="form-control">
+                        <option t-foreach="languages" t-as="lg" t-att-value="lg.id"
+                                t-att-selected="lg.id == s_lang or lg.code == website.default_lang_code">
+                            <t t-esc="lg.name"/>
+                        </option>
+                    </select>
+                </td>
+            </tr>
+            <tr><td><h4 align="center">Dictionaries</h4></td></tr>
+            <tr><td><div name="dictionaries" align="center"/></td></tr>
+            <tr>
+                <td align="center">
+                    <input type="hidden" name="the_word" t-att-value="word_id.id"/>
+                    <input name="word_dictionary"/>
+                    <a href="#" name="add_dict" class="btn btn-sm btn-danger">Add Dictionary</a>
+                </td>
+            </tr>
+        </table>
+    </template>
+
+
+</odoo>
