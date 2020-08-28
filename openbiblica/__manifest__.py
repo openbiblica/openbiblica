@@ -7,7 +7,7 @@
     OpenBiblica is a web based bible translation platform
     This module contents the basic models and backend views
     """,
-    'author': "Kusuma Ruslan",
+    'author': "Open Biblica",
     'website': "http://www.openbiblica.com",
     'category': 'Website',
     'depends': ['website_forum'],
