@@ -5,7 +5,7 @@
     'sequence': 1,
     'description': """
     """,
-    'author': "Kusuma Ruslan",
+    'author': "Open Biblica",
     'website': "http://www.openbiblica.com",
     'category': 'Website',
     'depends': ['transliterate'],
