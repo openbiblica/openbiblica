@@ -10,7 +10,7 @@
     - Translate bible
     - Forum Integration
     """,
-    'author': "Kusuma Ruslan",
+    'author': "Open Biblica",
     'website': 'https://www.openbiblica.com',
     'category': 'Website',
     'depends': ['openbiblica'],
